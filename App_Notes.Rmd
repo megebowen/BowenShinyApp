@@ -1,0 +1,60 @@
+---
+title: "Shiny App Notes"
+author: "Meghan Bowen"
+date: "2/14/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages, message=FALSE}
+
+library(tidyverse)
+
+```
+
+
+Notes for Shiny App Outputs
+
+## Output 1. Historic trends in park attendance
+
+###By year
+
+- OPTION 1: choose one park only
+
+$$OUTPUT = Graph(AllYears)$$
+
+```{r example_yeartrend}
+
+yosemite_vis_year <- read_csv("yosemite_vis_year.csv") 
+
+yosemite_vis_year = yosemite_vis_year[-1,]
+colnames(yosemite_vis_year) <- yosemite_vis_year[1,]
+yosemite_vis_year = yosemite_vis_year[-1,]
+
+example_year<- ggplot(yosemite_vis_year, aes(x=Year, y=RecreationVisitors))+
+  geom_point()
+
+example_year
+
+```
+
+
+- OPTION 2: choose two parks
+
+$$OUTPUT = Graph(AllYears[overlap])$$
+
+###By month
+- Option 1: choose one park only
+
+$$OUTPUT = Graph(AllYears[Months])$$
+
+- Option 2: choose two parks
+
+$$OUTPUT = Graph(AllYears[overlap,Months])$$
+
+## Output 2.
+
+## Output 3. 
