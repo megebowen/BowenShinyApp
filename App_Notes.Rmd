@@ -55,6 +55,23 @@ $$OUTPUT = Graph(AllYears[Months])$$
 
 $$OUTPUT = Graph(AllYears[overlap,Months])$$
 
-## Output 2.
+## Output 2. Predicted Visitation Trends
 
-## Output 3. 
+- Option 1: Choose by month
+
+$$ARIMA ??$$
+
+- Option 2: Choose by year
+
+$$ARIMA??$$
+
+## Output 3. Calculate travel costs
+
+- Option 1
+
+- Option 2
+
+- Option 3
+
+- Option 4
+
