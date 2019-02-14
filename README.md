@@ -2,8 +2,10 @@
 Shiny App for US National Park Visitor Trends (1900s-2018) and Travel Costs
 
 National Park Visitation Data obtained from:
+https://irma.nps.gov/Stats/
 
 Climate Data obtained from:
+https://www.ncdc.noaa.gov/cag/county/time-series
 
 Climate data was obtained at the county scale
 - Arches: Grand County, Utah
@@ -17,4 +19,3 @@ Climate data was obtained at the county scale
 - Yosemite: Mariposa, California
 - Zion: Washington, Kane, and Iron Counties, Utah
 
-- TESTING
