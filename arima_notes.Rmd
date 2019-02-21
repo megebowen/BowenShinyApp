@@ -60,7 +60,6 @@ channel_group <- channel_vis_month %>%
 
 ```
 
-<<<<<<< HEAD
 
 How to get this data clean!?!?!
 1. separate out by column (one column has year, one column has month [jan/feb/etc])
@@ -74,6 +73,4 @@ Year  Month VisitorCount
 etcc.... for every year and monthclass
 
 "split-apply-combine" :: https://nicercode.github.io/guides/repeating-things/
-=======
 
->>>>>>> 65f77aa40acd88446f8bd048fe17a241f326bb58
