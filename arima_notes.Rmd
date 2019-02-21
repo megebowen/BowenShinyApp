@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(knitr)
 library(lubridate)
+library(tseries)
+library(forecast)
 
 ```
 
@@ -45,14 +47,30 @@ channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vi
 channel_vis_month$Year <- as.factor(channel_vis_month$Year)
 channel_vis_month <-as.data.frame(channel_vis_month) #don't know if this is necessary atm
 
-gather_up <- gather(channel_vis_month, key = "Month", value = "VisitorCount", JAN:DEC)
+gather_up <- gather(channel_vis_month, key = "Month", value = "VisitorCount", JAN:DEC) %>% 
+  unite(Year_Month, c(Year, Month), remove = T)
 
-gather_plot <- ggplot(gather_up, aes(x=Year, y=VisitorCount)) +
+gather_plot <- ggplot(gather_up, aes(x=Year_Month, y=VisitorCount)) +
   geom_point()
 
 gather_plot
 ```
 
+```{r check_arima_assumptions}
+#convert to timeseries data
+ex_ts <- ts(gather_up$VisitorCount, frequency = 12, start = c(1979,1))
 
+ex_ts <- na.remove(ex_ts)
+
+plot(ex_ts)
+
+#check decomposition
+ex_decomp <- decompose(ex_ts)
+plot(ex_decomp)
+
+#check ACF
+ex_acf <- acf(ex_ts)
+
+```
 
 
