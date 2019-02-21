@@ -16,5 +16,3 @@ Climate data was obtained at the county scale
 - Yellowstone: Park & Teton Counties, Wyoming: Gallatin & Park Counties, Montana: Fremont County, Idaho
 - Yosemite: Mariposa, California
 - Zion: Washington, Kane, and Iron Counties, Utah
-
-- TESTING
