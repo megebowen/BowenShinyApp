@@ -45,18 +45,9 @@ channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vi
 channel_vis_month$Year <- as.factor(channel_vis_month$Year)
 channel_vis_month <-as.data.frame(channel_vis_month) #don't know if this is necessary atm
 
-<<<<<<< HEAD
-separate <- for (i)
-channel_group <- lapply()
-
-summarize(channel_group)
-
-=======
 channel_group <- channel_vis_month %>% 
   select(Year, JAN) %>% 
   mutate(month = "January")
->>>>>>> 65f77aa40acd88446f8bd048fe17a241f326bb58
-
 
 ```
 
