@@ -19,10 +19,10 @@ library(knitr)
 
 ```{r load_data}
 
-channel_vis_year <- read_csv("~/github/BowenShinyApp/channel_vis_year.csv") %>% 
+channel_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vis_year.csv") %>% 
   select(Year, RecreationVisitors)
 
-channel_vis_month <- read_csv("~/github/BowenShinyApp/channel_vis_month.csv") %>% 
+channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vis_month.csv") %>% 
   select(-Textbox5) %>% 
   mutate(Month = "January")
 channel_vis_month$Year <- as.factor(channel_vis_month$Year)
