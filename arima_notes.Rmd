@@ -45,23 +45,14 @@ channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vi
 channel_vis_month$Year <- as.factor(channel_vis_month$Year)
 channel_vis_month <-as.data.frame(channel_vis_month) #don't know if this is necessary atm
 
-channel_group <- channel_vis_month %>% 
-  select(Year, JAN) %>% 
-  mutate(month = "January")
+gather_up <- gather(channel_vis_month, key = "Month", value = "VisitorCount", JAN:DEC)
 
+gather_plot <- ggplot(gather_up, aes(x=Year, y=VisitorCount)) +
+  geom_point()
+
+gather_plot
 ```
 
 
-How to get this data clean!?!?!
-1. separate out by column (one column has year, one column has month [jan/feb/etc])
-2. rbind by year to original data frame
-3. END RESULT:
-Year  Month VisitorCount
-1979  Jan   2700
-1979  Feb   3121
-1979  Mar   4774
 
-etcc.... for every year and monthclass
-
-"split-apply-combine" :: https://nicercode.github.io/guides/repeating-things/
 
