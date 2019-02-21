@@ -1,0 +1,33 @@
+---
+title: "arima_notes"
+author: "Meghan Bowen"
+date: "2/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages}
+
+library(tidyverse)
+library(knitr)
+
+```
+
+
+```{r load_data}
+
+channel_vis_year <- read_csv("~/github/BowenShinyApp/channel_vis_year.csv") %>% 
+  select(Year, RecreationVisitors)
+
+channel_vis_month <- read_csv("~/github/BowenShinyApp/channel_vis_month.csv") %>% 
+  select(-Textbox5) %>% 
+  mutate(Month = "January")
+channel_vis_month$Year <- as.factor(channel_vis_month$Year)
+
+plot(channel_vis_year)
+ggplot(data = channel_vis_month, aes(x=Year))
+
+```
