@@ -45,15 +45,22 @@ channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vi
 channel_vis_month$Year <- as.factor(channel_vis_month$Year)
 channel_vis_month <-as.data.frame(channel_vis_month) #don't know if this is necessary atm
 
+<<<<<<< HEAD
 separate <- for (i)
 channel_group <- lapply()
 
 summarize(channel_group)
 
+=======
+channel_group <- channel_vis_month %>% 
+  select(Year, JAN) %>% 
+  mutate(month = "January")
+>>>>>>> 65f77aa40acd88446f8bd048fe17a241f326bb58
 
 
 ```
 
+<<<<<<< HEAD
 
 How to get this data clean!?!?!
 1. separate out by column (one column has year, one column has month [jan/feb/etc])
@@ -67,3 +74,6 @@ Year  Month VisitorCount
 etcc.... for every year and monthclass
 
 "split-apply-combine" :: https://nicercode.github.io/guides/repeating-things/
+=======
+
+>>>>>>> 65f77aa40acd88446f8bd048fe17a241f326bb58
