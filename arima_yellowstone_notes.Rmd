@@ -56,27 +56,47 @@ gather_yellowstone <- unite(gather_yellowstone,
 
 ```{r check_arima_assumptions}
 #convert to timeseries data
-ex_ts <- ts(gather_up$VisitorCount, frequency = 12, start = c(1979,1))
+yellowstone_ts <- ts(gather_yellowstone$VisitorCount, frequency = 12, start = c(1979,1))
 
-ex_ts <- na.remove(ex_ts)
+#any NA values for visitation?
+sum(is.na(gather_yellowstone$VisitorCount))
 
-plot(ex_ts)
+plot(yellowstone_ts)
 
 #check decomposition
-ex_decomp <- decompose(ex_ts)
-plot(ex_decomp)
+yellowstone_decomp <- decompose(yellowstone_ts)
+plot(yellowstone_decomp)
 
 #check ACF
-ex_acf <- acf(ex_ts)
+yellowstone_acf <- acf(yellowstone_ts)
 
 ```
 
 ```{r holt_winters}
 
-#trying holt-winters first. apparently it didn't work
+## the yellowstone decomposition looks pretty good for Holt-Winters?!
 
-## channel_hw <- HoltWinters(ex_ts)
+# 1. Run Holt-Winters 
 
+yellowstone_hw <- HoltWinters(yellowstone_ts)
+
+# WHAT DOES THIS ERROR MEAN?!
+# optimization difficulties: ERROR: ABNORMAL_TERMINATION_IN_LNSRCH
+plot(yellowstone_hw)
+
+# 2. Forecast HW (h = 60 for 60 months, aka 5 years)
+
+yellowstone_hw_forecast <- forecast(yellowstone_hw, h = 60)
+plot(yellowstone_hw_forecast)
+
+# 3. Residuals. Not looking super normal, but what ever is really....
+
+hist(yellowstone_hw_forecast$residuals)
+qqnorm(yellowstone_hw_forecast$residuals)
+
+```
+
+```{r arima}
 # ARIMA
 
 channel_pdq <- auto.arima(ex_ts)
