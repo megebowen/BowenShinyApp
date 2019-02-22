@@ -9,22 +9,44 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Looking at Historic Trends in National Park Attendance
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r load_packages}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+library(tidyverse)
+library(knitr)
 
-```{r cars}
-summary(cars)
+```
+## Part 1. Yearly Attendance
+
+```{r load_clean_year_data}
+
+yellowstone_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/yellowstone_vis_year.csv")
+
+#The yearly data as it stands goes from very small to very large
+#Let's maybe mutate it to have a column of millions of visitors?
+
+yellowstone_vis_year <- yellowstone_vis_year %>% 
+  mutate(Visitors_Mil = RecreationVisitors/1000000)
+
 ```
 
-## Including Plots
+```{r plot_year}
 
-You can also embed plots, for example:
+ggplot(yellowstone_vis_year, 
+       aes(x=Year, y=Visitors_Mil))+
+  geom_point() +
+  labs(x= "Year",
+       y= "Number of Visitors \n (millions)",
+       title = "Yearly Visitors to Yellowstone",
+       subtitle = "(1904-2018)") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Part 2. Monthly Attendance
+
+
