@@ -50,10 +50,6 @@ channel_vis_month <-as.data.frame(channel_vis_month) #don't know if this is nece
 gather_up <- gather(channel_vis_month, key = "Month", value = "VisitorCount", JAN:DEC) %>% 
   unite(Year_Month, c(Year, Month), remove = T)
 
-gather_plot <- ggplot(gather_up, aes(x=Year_Month, y=VisitorCount)) +
-  geom_point()
-
-gather_plot
 ```
 
 ```{r check_arima_assumptions}
@@ -73,4 +69,43 @@ ex_acf <- acf(ex_ts)
 
 ```
 
+```{r holt_winters}
 
+#trying holt-winters first. apparently it didn't work
+
+channel_hw <- HoltWinters(ex_ts)
+
+# ARIMA
+
+channel_pdq <- auto.arima(ex_ts)
+channel_pdq
+
+# ARIMA predicted pdq: (0,1,1)(0,0,1)[11] 
+
+channel_arima <- arima(ex_ts, order = c(0,1,1), seasonal = list(order = c(0,0,1)))
+channel_arima
+
+# Residuals. not looking great, but not completely not-normal ??
+
+par(mfrow = c(1,2))
+hist(channel_arima$residuals)
+qqnorm(channel_arima$residuals)
+
+# ARIMA Forecast: let's do 5 years (60 months)
+
+channel_forecast <- forecast(channel_arima, h = 60)
+
+
+```
+
+```{r predicted_visitation_plot}
+
+channel_forecast_df <- data.frame(channel_forecast)
+
+# monthly data frame
+month_seq <- seq(1,72)
+res_df2 <- data.frame(month_seq, res_df)
+
+
+ggplot(res_df2, aes(x=month_seq, y = Point.Forecast)) +
+  geom_line()
