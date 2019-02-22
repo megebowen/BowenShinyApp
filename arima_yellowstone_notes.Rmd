@@ -20,10 +20,7 @@ library(forecast)
 ```
 
 
-```{r load_data}
-
-channel_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vis_year.csv") %>% 
-  select(Year, RecreationVisitors)
+```{r load_data_Yellowstone}
 
 arches_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/arches_vis_year.csv")
 arches_vis_year <- arches_vis_year[-1,]
