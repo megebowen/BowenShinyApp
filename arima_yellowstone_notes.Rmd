@@ -16,7 +16,7 @@ library(knitr)
 library(lubridate)
 library(tseries)
 library(forecast)
-
+library(gridExtra)
 ```
 
 
@@ -97,40 +97,67 @@ qqnorm(yellowstone_hw_forecast$residuals)
 ```
 
 ```{r arima}
-# ARIMA
+## let's see what an ARIMA looks like
 
-channel_pdq <- auto.arima(ex_ts)
-channel_pdq
+# 1. Find pdq values
+yellowstone_pdq <- auto.arima(yellowstone_ts)
+yellowstone_pdq
 
-# ARIMA predicted pdq: (0,1,1)(0,0,1)[11] 
+## ARIMA predicted pdq: (1,0,0)(0,1,1)[12] 
 
-channel_arima <- arima(ex_ts, order = c(0,1,1), seasonal = list(order = c(0,0,1)))
-channel_arima
 
-# Residuals. not looking great, but not completely not-normal ??
+# 2. Run ARIMA
+yellowstone_arima <- arima(yellowstone_ts, 
+                           order = c(1,0,0), 
+                           seasonal = list(order = c(0,1,1)))
+yellowstone_arima
+
+# 3. Check Residuals. not looking great, but not completely not-normal ??
 
 par(mfrow = c(1,2))
-hist(channel_arima$residuals)
-qqnorm(channel_arima$residuals)
+hist(yellowstone_arima$residuals)
+qqnorm(yellowstone_arima$residuals)
 
-# ARIMA Forecast: let's do 5 years (60 months)
+# 4. Forecast: again let's do 5 years (60 months)
 
-channel_forecast <- forecast(channel_arima, h = 60)
-plot(channel_forecast)
+yellowstone_arima_forecast <- forecast(yellowstone_arima, h = 60)
+plot(yellowstone_arima_forecast)
 
 ```
 
-```{r predicted_visitation_plot}
+```{r compare_hw_arima}
 
-channel_forecast_0 <- data.frame(channel_forecast)
+par(mfrow=c(2,1))
+plot(yellowstone_hw_forecast)
+plot(yellowstone_arima_forecast)
+```
 
-# monthly data frame
+
+
+```{r ggplots_hw_arima}
+# Convert Holt Winters Predictions into df
+yellowstone_hw_df <- data.frame(yellowstone_hw_forecast)
 month_seq <- seq(1,60)
-channel_forecast_df <- data.frame(month_seq, channel_forecast_0)
+yellowstone_hw_plot_df <- data.frame(month_seq, yellowstone_hw_df)
+
+# Convert ARIMA Predictions int odf
+yellowstone_arima_df <- data.frame(yellowstone_arima_forecast)
+yellowstone_arima_plot_df <- data.frame(month_seq, yellowstone_arima_df)
 
 
-ggplot(channel_forecast_df, aes(x=month_seq, y = Point.Forecast)) +
+# Plot 1: HW Predictions
+yellowstone_hw_plot <- ggplot(yellowstone_hw_df, 
+                              aes(x=month_seq, y = Point.Forecast)) +
   geom_line()
+
+# Plot 2: ARIMA Predictions
+yellowstone_arima_plot <- ggplot(yellowstone_arima_df, 
+                              aes(x=month_seq, y = Point.Forecast)) +
+  geom_line()
+
+
+# Now BOTH
+gridExtra::grid.arrange(grobs = list(yellowstone_hw_plot, yellowstone_arima_plot))
+
+
 ```
-
-
