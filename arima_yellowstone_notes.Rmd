@@ -20,17 +20,15 @@ library(forecast)
 ```
 
 
-```{r load_data_Yellowstone}
+```{r load_data_Yellowstone_yr}
 
-arches_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/arches_vis_year.csv")
-arches_vis_year <- arches_vis_year[-1,]
-colnames(arches_vis_year) <- arches_vis_year[1,]
-arches_vis_year <- arches_vis_year[-1,]
+yellowstone_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/yellowstone_vis_year.csv")
+yellowstone_vis_year <- yellowstone_vis_year[-1,]
+colnames(yellowstone_vis_year) <- yellowstone_vis_year[1,]
+yellowstone_vis_year <- yellowstone_vis_year[-1,]
 
 #Explore yearly data
-
-plot(channel_vis_year)
-ggplot(arches_vis_year, aes(x=Year, y=RecreationVisitors))+
+ggplot(yellowstone_vis_year, aes(x=Year, y=RecreationVisitors))+
   geom_point()
 
 
@@ -39,13 +37,20 @@ ggplot(arches_vis_year, aes(x=Year, y=RecreationVisitors))+
 ```{r clean_month}
 ##Need to clean the monthly data and make into tidy format
 
-channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vis_month.csv") %>% 
+yellowstone_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yellowstone_vis_month.csv") %>%
   select(-Textbox5)
-channel_vis_month$Year <- as.factor(channel_vis_month$Year)
-channel_vis_month <-as.data.frame(channel_vis_month) #don't know if this is necessary atm
+yellowstone_vis_month$Year <- as.factor(yellowstone_vis_month$Year)
 
-gather_up <- gather(channel_vis_month, key = "Month", value = "VisitorCount", JAN:DEC) %>% 
-  unite(Year_Month, c(Year, Month), remove = T)
+gather_up <- gather(yellowstone_vis_month, key = "Month", value = "VisitorCount", JAN:DEC)
+#gather_up <- as.data.frame(gather_up)
+gather_up$Month <- as.factor(gather_up$Month)
+
+months <- factor(levels = c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"))
+gather_up$Month <- fct_relevel(gather_up$Month, months)
+
+gather_yellowstone <- gather_up[order(gather_up$Year),]
+gather_yellowstone <- unite(gather_yellowstone,
+                            Year_Month, c(Year, Month), remove = T)
 
 ```
 
