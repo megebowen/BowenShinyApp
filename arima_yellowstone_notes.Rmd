@@ -27,9 +27,6 @@ yellowstone_vis_year <- yellowstone_vis_year[-1,]
 colnames(yellowstone_vis_year) <- yellowstone_vis_year[1,]
 yellowstone_vis_year <- yellowstone_vis_year[-1,]
 
-#Explore yearly data
-ggplot(yellowstone_vis_year, aes(x=Year, y=RecreationVisitors))+
-  geom_point()
 
 
 ```
