@@ -57,13 +57,15 @@ $$OUTPUT = Graph(AllYears[overlap,Months])$$
 
 ## Output 2. Predicted Visitation Trends
 
+- SPITS OUT VALUE of CHOICE
+
 - Option 1: Choose by month
 
-$$ARIMA ??$$
+$$ Holt Winters$$
 
 - Option 2: Choose by year
 
-$$ARIMA??$$
+$$ Holt Winters$$
 
 ## Output 3. Calculate travel costs
 

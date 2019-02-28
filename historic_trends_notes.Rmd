@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(knitr)
+library(ggfortify) ##for better luck with the monthly data plots, plots ts objects
 
 ```
 ## Part 1. Yearly Attendance
@@ -65,21 +66,20 @@ gather_up$Month <- fct_relevel(gather_up$Month, "JAN", "FEB", "MAR", "APR", "MAY
 gather_yellowstone <- gather_up[order(gather_up$Year),] %>% 
   mutate(Visitors_Thou = VisitorCount/1000)
 
-
+# change to ts object
+yellowstone_monthly_ts <- ts(gather_yellowstone$Visitors_Thou, frequency = 12, start = c(1979,1))
 
 ```
 
 ```{r plot_monthly}
 
-ggplot(gather_yellowstone, 
-       aes(x=Year, y=Visitors_Thou))+
-  geom_point() 
-  #labs(x= "Year",
-       #y= "Number of Visitors \n (millions)",
-       #title = "Yearly Visitors to Yellowstone",
-       #subtitle = "(1904-2018)") +
-  #theme_classic() +
-  #theme(plot.title = element_text(hjust = 0.5),
-   #     plot.subtitle = element_text(hjust = 0.5))
+ggplot2::autoplot(yellowstone_monthly_ts) +
+  labs(x= "Year",
+       y= "Number of Visitors \n (millions)",
+       title = "Monthly Visitors to Yellowstone",
+       subtitle = "(1979-2018)") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
 
 ```
