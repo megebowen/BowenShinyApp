@@ -58,26 +58,21 @@ yellowstone_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yellow
 yellowstone_vis_month$Year <- as.factor(yellowstone_vis_month$Year)
 
 gather_up <- gather(yellowstone_vis_month, key = "Month", value = "VisitorCount", JAN:DEC)
-#gather_up <- as.data.frame(gather_up)
+
 gather_up$Month <- as.factor(gather_up$Month)
+gather_up$Month <- fct_relevel(gather_up$Month, "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
 
-months <- factor(levels = c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"))
-gather_up$Month <- fct_relevel(gather_up$Month, months)
+gather_yellowstone <- gather_up[order(gather_up$Year),] %>% 
+  mutate(Visitors_Thou = VisitorCount/1000)
 
-gather_yellowstone <- gather_up[order(gather_up$Year),]
 
-#The yearly data as it stands goes from very small to very large
-#Let's maybe mutate it to have a column of millions of visitors?
-
-yellowstone_vis_year <- yellowstone_vis_year %>% 
-  mutate(Visitors_Mil = RecreationVisitors/1000000)
 
 ```
 
 ```{r plot_monthly}
 
 ggplot(gather_yellowstone, 
-       aes(x=Year, y=VisitorCount))+
+       aes(x=Year, y=Visitors_Thou))+
   geom_point() 
   #labs(x= "Year",
        #y= "Number of Visitors \n (millions)",
