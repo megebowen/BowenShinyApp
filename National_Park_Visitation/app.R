@@ -12,7 +12,7 @@ ui <- fluidPage(
    # Application title
    titlePanel("Historic National Park Visitation Data and Predictions"),
    
-   navbarPage("TEXT",
+   navbarPage("",
               
               tabPanel("Summary"),
               tabPanel("Historic Trends",
@@ -37,7 +37,9 @@ ui <- fluidPage(
                            fluidRow(column(3, verbatimTextOutput("value")))
                          ),
       
-                         mainPanel()
+                         mainPanel(
+                           plotOutput("year_plot")
+                           )
                        )),
               
               tabPanel("Predicted Trends",
@@ -92,6 +94,24 @@ server <- function(input, output) {
       
       # draw the histogram with the specified number of bins
       hist(x, breaks = bins, col = 'darkgray', border = 'white')
+   })
+   
+   output$year_plot <- renderPlot({
+     x    <- yellowstone_vis_year
+     
+     x_vis_year <- x %>% 
+       mutate(Visitors_Mil = RecreationVisitors/1000000)
+     year_plot<- ggplot(yellowstone_vis_year, aes(x=Year, y=Visitors_Mil)) + 
+       geom_point() +
+       labs(x= "Year",
+            y= "Number of Visitors \n (millions)",
+            title = "Yearly Visitors to Yellowstone",
+            subtitle = "(1904-2018)") +
+       theme_classic() +
+       theme(plot.title = element_text(hjust = 0.5),
+             plot.subtitle = element_text(hjust = 0.5))
+     
+     return(year_plot)
    })
 }
 

@@ -93,6 +93,38 @@ qqnorm(yellowstone_hw_forecast$residuals)
 
 ```
 
+```{r hw_value_calls}
+
+yellowstone_upper <- yellowstone_hw_forecast$upper
+yellowstone_lower <- yellowstone_hw_forecast$lower
+
+yellowstone_average <- yellowstone_hw_forecast$mean
+```
+
+```{r general_plot_code}
+
+renderPlot({
+  
+      x    <- yellowstone_vis_year
+      
+      x_vis_year <- x %>% 
+        mutate(Visitors_Mil = RecreationVisitors/1000000)
+      year_plot<- ggplot(yellowstone_vis_year, aes(x=Year, y=Visitors_Mil)) + 
+        geom_point() +
+        labs(x= "Year",
+             y= "Number of Visitors \n (millions)",
+             title = "Yearly Visitors to Yellowstone",
+             subtitle = "(1904-2018)") +
+        theme_classic() +
+        theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+      
+      return(year_plot)
+   })
+
+```
+
+
 ```{r arima}
 ## let's see what an ARIMA looks like
 
