@@ -129,7 +129,7 @@ Oct-Nov: $25
 
 
 
-## 3. Hotel Prices (per day) : 
+## 3. Lodge/Hotel Prices (per day) : 
 https://www.nationalparkreservations.com
 
 - used an average price for each month for three local lodges/hotels from the above website
@@ -216,19 +216,104 @@ https://www.nationalparkreservations.com
 ####average price per day:
 69+69+79/3= 72.33
 
-## 4. Car ( )
 
-## 5. Plane price
+
+
+## 4. Car (price per trip)
+- base mileage rate calculated from AAA national gas price as of March 2019 (https://gasprices.aaa.com/state-gas-price-averages) : **$2.45/gallon**
+- average efficiency of a standard passenger car calculated from 2016 data (https://www.bts.gov/content/average-fuel-efficiency-us-light-duty-vehicles): **22 mpg** 
+- distance calculated from UCSB (Goleta, CA) to the National Park using google maps
+- TOTAL AUTO TRAVEL COST FORMULA:
+$$ Cost = 2 * (distance(miles)/22mpg) *2.45/gallon $$
+
+### Auto Distances and Round Trip Costs:
+- SB--> Arches: 819 miles (**cost = 2 x (819/22 x 2.45) == $182.41 **)
+- SB--> Badlands: 1,429 (**cost  = $318.28**)
+- SB--> Channel Islands: 46 miles (**cost = $10.25**)
+- SB--> Glacier: 1,436 (**cost = $319.84**)
+- SB--> Grand Teton: 1,044 (**cost = 232.53 **)
+- SB--> Redwood: 638 (**cost = $142.10**)
+- SB--> Shenandoah: 2,692 (**cost = $599.58**)
+- SB--> Yellowstone: 1,119 (**cost = $249.23**)
+- SB--> Yosemite: 363 (**cost = 80.85**)
+- SB--> Zion: 526 (**cost = 117.15**)
+
+
+
+## 5. Plane (price per round-trip flight, plus extra)
+
+## Calculation 1: round-trip flight to nearest airport
+- total price is for one person 
+- ** note: to make the data compilation easier, flights are from LAX to nearest major airport ** (driving from NMA to the national park might be longer) 
+- historic seasonal price for 2018-2019 data obtained from (https://faredetective.com)
+- base prices chosen from a mid-month weekday (12-16) and for a 4 day trip
+
+
+### Plane Roundtrip costs:
+
+#### 1. Arches: LAX--> LAS (McCarran)
+- Jan: 
+- Feb: 
+- Mar
+- Apr
+- May
+- June
+- July
+- Aug
+- Sep: 
+- Oct: $722
+- Nov: $571
+- Dec: $441
+
+
+### 2. LAX--> RAP Badlands
+
+### 3. SB--> Channel Islands: NO AIRPORT*, NO FLIGHTS
+*Santa Rosa Island has a landing strip, but to avoid further complication and confusion it is assumed that the only way to make it to CINP is by boat
+
+### 4. LAX--> FCA Glacier CALGARY?!
+- no data on fare detective
+
+
+### 5. LAX--> IDA (Idaho Falls) Grand Teton:
+
+### 6. LAX--> SFO/SAC (closest with data) Redwood: 
+
+### 7. LAX--> IAD Shenandoah
+
+### 8. SB--> Yellowstone BZN (closest with data)
+
+### 9. SB--> FAT Yosemite: 
+
+### 10. SB--> LAS Zion
+
+
+### Calculation 2: additional travel cost via car/bus/whatever to NP 
+
+
+### Plane Flight Formula:
+where p is the number of people traveling:
+
+$$ PlaneCost = x(TicketPrice) + (CarPrice) $$
 
 ## 6. Additional Fees?
 
 - for Channel Islands: need to include roundtrip boat price 
-###roundtrip Boat Price per Island:
--
--
 
-**average price for XXX islands is == :: $$... + [Boat]$$**
+### Channel Islands: Overnight Boat Price (two adults):
+- Anacapa: 79*2 = $158
+- San Miguel: 147 * 2 = $294
+- Santa Barbara: XX (closed for 2019)
+- Santa Cruz: 79 *2 = $158
+- Santa Rosa: 114 * 2 = $228
+
+**average price for boating (from four islands) is = $209.50 **
+
+
+
 
 ## Travel Cost Formula
 
-$$TC = PE + [CF*x]||[HP*x] + 2[Car]||2[Plane] + AP$$
+where x is the number of days staying at the NP, 
+
+$$TRAVEL COST = (Park Entrance) + [CampFee*x]||[HotelPrice*x] + [CarRound]||[PlaneRound] + AddnlFee$$
