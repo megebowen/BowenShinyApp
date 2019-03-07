@@ -4,3 +4,10 @@ radioButtons("radio", label = h3("Month"),
 
 hr(),
 fluidRow(column(3, verbatimTextOutput("value")))
+
+ggplot(filter(marvel, ALIGN == input$side), aes(x = Year)) +
+  geom_bar(aes(fill = SEX), position = "fill") +
+  scale_fill_brewer(palette = "RdPu") +
+  theme_dark()
+
+ALIGN is column name

@@ -7,8 +7,15 @@ library(tseries)
 library(forecast)
 library(gridExtra)
 
+# Read in Yearly Visitation DF
 all_year_visitation <- read_csv("~/github/BowenShinyApp/all_year_visitation.csv")
+all_year_visitation$ParkName <- as.factor(all_year_visitation$ParkName)
 
+# Read in Monthly Visitation DF
+
+# Read in HW Forecasting (DF?)
+
+# Read in Travel Cost DF
 
 # Define UI 
 ui <- fluidPage(
@@ -23,21 +30,28 @@ ui <- fluidPage(
                        
                        sidebarLayout(
                          sidebarPanel(
-                           selectInput(inputId = "year_graph_choice",
-                                       label = ("Choose a National Park:"), 
-                                       choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion")
-                                       ),
-                           
-                           hr(),
-                           fluidRow(column(3, verbatimTextOutput("value")))
-                         ),
-                           
-                           mainPanel(
-                             plotlyOutput("year_plot")
-                           )
+                           selectInput("year_graph_choice",
+                                       "Choose a National Park:", 
+                                       c("Arches", 
+                                         "Badlands", 
+                                         "Channel Islands", 
+                                         "Glacier", 
+                                         "Grand Teton", 
+                                         "Redwood", 
+                                         "Shenandoah", 
+                                         "Yellowstone", 
+                                         "Yosemite", 
+                                         "Zion")
+                                       )),
                          
+                         mainPanel(
+                           h3(textOutput("caption")),
+                           plotOutput(outputId = "year_plot",
+                                      height = "500px")
+                         )
       
                        )),
+
               
               tabPanel("Predicted Trends",
                        
@@ -68,28 +82,24 @@ ui <- fluidPage(
 
 
 
-
 # Define Server
 server <- function(input, output) {
-  
-   year    <- reactive({
-     subset(all_year_visitation, ParkName %in% input$graph_year_choice)
-   })
    
-   output$year_plot <- renderPlotly({
-     yr_plot<- ggplot(all_year_visitation) +
-       geom_point(aes(x=Year, y=Visitors_Mil),
-                  subset(ParkName == year)) +
+   output$year_plot <- renderPlot({
+     
+     plot1 <- ggplot(filter(all_year_visitation,
+                             ParkName == input$year_graph_choice)) +
+       geom_point(aes(x=Year, y = Visitors_Mil)) +
        labs(x= "Year",
             y= "Number of Visitors \n (millions)",
-            title = "Yearly Visitors to input$year",
+            title = "Yearly Visitors to input$year_graph_choice",
             subtitle = "(1904-2018)") +
        theme_classic() +
        theme(plot.title = element_text(hjust = 0.5),
              plot.subtitle = element_text(hjust = 0.5),
              legend.position = "none")
      
-     ggplotly(yr_plot)
+     print(plot1)
    })
 }
 
