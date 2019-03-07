@@ -32,25 +32,17 @@ ui <- fluidPage(
                          sidebarPanel(
                            selectInput("year_graph_choice",
                                        "Choose a National Park:", 
-                                       c("Arches", 
-                                         "Badlands", 
-                                         "Channel Islands", 
-                                         "Glacier", 
-                                         "Grand Teton", 
-                                         "Redwood", 
-                                         "Shenandoah", 
-                                         "Yellowstone", 
-                                         "Yosemite", 
-                                         "Zion")
+                                       c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion")
                                        )),
                          
                          mainPanel(
                            h3(textOutput("caption")),
                            plotOutput(outputId = "year_plot",
-                                      height = "500px")
-                         )
+                                      height = "450px",
+                                      hover = "plot_hover"),
+                           verbatimTextOutput("yr_hover")
       
-                       )),
+                       ))),
 
               
               tabPanel("Predicted Trends",
@@ -60,20 +52,19 @@ ui <- fluidPage(
                                selectInput("select", inputId = "year_graph_choice",
                                            label = ("Choose a National Park:"), 
                                            choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion") 
-                                           ),
-                               
-                               hr(),
-                               fluidRow(column(3, verbatimTextOutput("value")))
-                         ),
+                                           )),
                      
             
                        mainPanel()
                        )),
               
-              tabPanel("Travel Costs")
+              tabPanel("Travel Costs",
+                       
+                       mainPanel()
+                       )
               
               )
-   
+
 )
 
 
@@ -87,20 +78,31 @@ server <- function(input, output) {
    
    output$year_plot <- renderPlot({
      
-     plot1 <- ggplot(filter(all_year_visitation,
+     ggplot(filter(all_year_visitation,
                              ParkName == input$year_graph_choice)) +
        geom_point(aes(x=Year, y = Visitors_Mil)) +
        labs(x= "Year",
             y= "Number of Visitors \n (millions)",
-            title = "Yearly Visitors to input$year_graph_choice",
-            subtitle = "(1904-2018)") +
+            title = paste("Yearly Visitors to", input$year_graph_choice)) +
        theme_classic() +
        theme(plot.title = element_text(hjust = 0.5),
              plot.subtitle = element_text(hjust = 0.5),
              legend.position = "none")
      
-     print(plot1)
    })
+   
+   output$yr_hover <- renderPrint({
+     
+     hover_fxn <- function(e) {
+       if(is.null(e)) return ("NA")
+    
+      paste("Year", return(e$x),
+            "Visitors", return(e$y))  
+     }
+     
+     paste(hover_fxn(input$plot_hover))
+   
+     })
 }
 
 
