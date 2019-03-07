@@ -1,0 +1,19 @@
+---
+title: "Travel Cost Data Sources"
+author: "Meghan Bowen"
+date: "3/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr)
+
+```
+
+## Sources for Travel Cost Calculations:
+
+1. Park Entrance Fee: [linked phrase] (https://www.nps.gov/aboutus/entrance-fee-prices.htm)
+
+- used the per vehicle price -- fees listed "current" or (if applicable) after January 1, 2019
