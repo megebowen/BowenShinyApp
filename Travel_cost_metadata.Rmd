@@ -242,62 +242,176 @@ $$ Cost = 2 * (distance(miles)/22mpg) *2.45/gallon $$
 
 ## 5. Plane (price per round-trip flight, plus extra)
 
+
 ## Calculation 1: round-trip flight to nearest airport
 - total price is for one person 
-- ** note: to make the data compilation easier, flights are from LAX to nearest major airport ** (driving from NMA to the national park might be longer) 
-- historic seasonal price for 2018-2019 data obtained from (https://faredetective.com)
-- base prices chosen from a mid-month weekday (12-16) and for a 4 day trip
-
+- ** note: to make the data compilation easier, flights are from LAX to nearest major airport ** 
+- predicted prices obtained from Google Flights
+- base prices chosen from the lowest available and for a 4 day trip
+- **no values available for February flights (I'm doing this data collection in March) --> so all February values are the same as the January value for that park
+- ^cheaper to fly from SBA to fresno than LAX to fresno: prices have been reflected accordingly
+- ^^Saint George Airport (SGU to fly in to Zion NP) is going to close from June-Sept 2019 so no flights or prices are available as of this data collection. based on the prices before & after this gap (about $212 for the cheapest flight), all values for June-Sept 2019 are assumed to be around 212.
 
 ### Plane Roundtrip costs:
 
-#### 1. Arches: LAX--> LAS (McCarran)
-- Jan: 
-- Feb: 
-- Mar
-- Apr
-- May
-- June
-- July
-- Aug
-- Sep: 
-- Oct: $722
-- Nov: $571
-- Dec: $441
+### 1. Arches: LAX--> CNY 
+- Jan: 223
+- Feb**: 223
+- Mar: 273
+- Apr: 273
+- May: 248
+- June: 273
+- July: 298
+- Aug: 223
+- Sep: 223
+- Oct: 248
+- Nov: 223
+- Dec: 233
 
 
-### 2. LAX--> RAP Badlands
+### 2. BadlandS: LAX--> RAP
+- Jan: 412
+- Feb**: 412 
+- Mar: 428
+- Apr: 393
+- May: 412
+- June: 370
+- July: 300
+- Aug: 300
+- Sep: 412
+- Oct: 412
+- Nov: 412
+- Dec: 412
+
 
 ### 3. SB--> Channel Islands: NO AIRPORT*, NO FLIGHTS
 *Santa Rosa Island has a landing strip, but to avoid further complication and confusion it is assumed that the only way to make it to CINP is by boat
 
-### 4. LAX--> FCA Glacier CALGARY?!
-- no data on fare detective
+### 4. Glacier: LAX--> FCA  
+- Jan: 216
+- Feb**: 216 
+- Mar: 285
+- Apr: 224
+- May: 224
+- June: 194
+- July: 207
+- Aug: 207
+- Sep: 224
+- Oct: 224
+- Nov: 224
+- Dec: 224
 
+### 5. Grand Teton: LAX--> JAC
+- Jan: 317
+- Feb**: 317 
+- Mar: 294
+- Apr: 294
+- May: 277
+- June: 317
+- July: 317
+- Aug: 302
+- Sep: 302
+- Oct: 317
+- Nov: 322
+- Dec: 317
 
-### 5. LAX--> IDA (Idaho Falls) Grand Teton:
+### 6. Redwood: LAX--> ACV 
+- Jan: 281
+- Feb**: 281 
+- Mar: 286
+- Apr: 281
+- May: 281
+- June: 281
+- July: 281
+- Aug: 281
+- Sep: 281
+- Oct: 281
+- Nov: 281
+- Dec: 281
 
-### 6. LAX--> SFO/SAC (closest with data) Redwood: 
+### 7. Shenandoah: LAX--> IAD 
+- Jan: 287
+- Feb**: 287 
+- Mar: 287
+- Apr: 258
+- May: 217
+- June: 266
+- July: 272
+- Aug: 267
+- Sep: 267
+- Oct: 287
+- Nov: 287
+- Dec: 287
 
-### 7. LAX--> IAD Shenandoah
+### 8. Yellowstone: LAX--> JAC
+- Jan: 317
+- Feb**: 317 
+- Mar: 294
+- Apr: 294
+- May: 277
+- June: 317
+- July: 317
+- Aug: 302
+- Sep: 302
+- Oct: 317
+- Nov: 322
+- Dec: 317
 
-### 8. SB--> Yellowstone BZN (closest with data)
+### 9. Yosemite: SB^ --> FAT 
+- Jan: 192
+- Feb**: 192 
+- Mar: 267
+- Apr: 192
+- May: 192
+- June: 192
+- July: 192
+- Aug: 192
+- Sep: 192
+- Oct: 192
+- Nov: 192
+- Dec: 192
 
-### 9. SB--> FAT Yosemite: 
+### 10. Zion: LAX --> SGU^^
+- Jan: 212
+- Feb**: 212 
+- Mar: 212
+- Apr: 212
+- May: 212
+- June: 212
+- July: 212
+- Aug: 212
+- Sep: 212
+- Oct: 212
+- Nov: 212
+- Dec: 212 
 
-### 10. SB--> LAS Zion
 
 
 ### Calculation 2: additional travel cost via car/bus/whatever to NP 
+- **NOT** calculating rental car prices: using the gas mileage calculations as above
+
+###Additional Mileage from:
+- airport (CNY) --> arches: 14 miles (addnl $ = 3.12)
+- airport (RAP) --> badlands: 54 miles (addnl $ = 12.03 )
+
+- airport (FCA) --> glacier: 25 miles (addnl $ = 5.57)
+- airport (JAC) --> grand teton: 4 miles (addnl $ = 0.89)
+- airport (ACV) --> redwood: 26 miles (addnl $ = 5.79)
+- airport (IAD) --> shenandoah: 56 miles (addnl $ = 12.47)
+- airport (JAC) --> yellowstone: 71 miles (addnl $ = 15.81)
+- airport (FAT) --> yosemite: 131 miles (addnl $ = 29.17)
+- airport (SGU) --> zion: 45 miles (addnl $ = 10.02)
 
 
-### Plane Flight Formula:
+
+### FINAL CALCULATIONS: Plane Flight Formula:
 where p is the number of people traveling:
 
-$$ PlaneCost = x(TicketPrice) + (CarPrice) $$
+$$ PlaneCost = p(TicketPrice) + (CarPrice) $$
 
 ## 6. Additional Fees?
 
+- for ALL OTHER PARKS THAN CHANNEL ISLANDS: additional fee is the **EXTRA MILEAGE TRAVELED IF CHOSEN FLIGHT AS TRAVEL OPTION**
 - for Channel Islands: need to include roundtrip boat price 
 
 ### Channel Islands: Overnight Boat Price (two adults):
