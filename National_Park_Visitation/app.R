@@ -5,13 +5,15 @@ library(ggfortify)
 library(plotly)
 library(tseries)
 library(forecast)
-library(gridExtra)
 
 # Read in Yearly Visitation DF
 all_year_visitation <- read_csv("~/github/BowenShinyApp/all_year_visitation.csv")
 all_year_visitation$ParkName <- as.factor(all_year_visitation$ParkName)
 
 # Read in Monthly Visitation DF
+all_month_visitation <- read_csv("~/github/BowenShinyApp/all_month_visitation.csv")
+all_month_visitation$ParkName <- as.factor(all_month_visitation$ParkName)
+all_month_visitation$Year <- as.factor(all_month_visitation$Year)
 
 # Read in HW Forecasting (DF?)
 
@@ -49,19 +51,22 @@ ui <- fluidPage(
                        
                        sidebarLayout(
                          sidebarPanel(
-                               selectInput("select", inputId = "year_graph_choice",
-                                           label = ("Choose a National Park:"), 
+                               selectInput("predict_choice",
+                                           label = "Choose a National Park:", 
                                            choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion") 
                                            )),
                      
             
-                       mainPanel()
+                       mainPanel(
+                         plotOutput(outputId = "predict_plot",
+                                    height = "450px"))
                        )),
               
               tabPanel("Travel Costs",
                        
-                       mainPanel()
-                       )
+                       mainPanel(
+                         ))
+                       
               
               )
 
@@ -76,6 +81,8 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output) {
    
+
+## FIRST OUTPUTS: YEARLY GRAPH
    output$year_plot <- renderPlot({
      
      ggplot(filter(all_year_visitation,
@@ -103,6 +110,44 @@ server <- function(input, output) {
      paste(hover_fxn(input$plot_hover))
    
      })
+
+   
+## SECOND OUTPUTS: HOLT-WINTERS PREDICTIONS   
+   ## NEED TO FIX!!! maybe make two functions, one with the reactive inputs and one with the plotting?
+   park_predictions <- reactive({
+     
+     park_filter <- all_month_visitation %>% 
+     filter(ParkName == input$predict_choice) %>% 
+     select(-ParkName)
+     
+     gather_up <- gather(park_filter, key = "Month", value = "VisitorCount", JAN:DEC)
+     gather_up$Month <- as.factor(gather_up$Month)
+     
+     months <- factor(levels = c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"))
+     gather_up$Month <- fct_relevel(gather_up$Month, months)
+     
+     gather_park <- gather_up[order(gather_up$Year),]
+     gather_park <- unite(gather_park,
+                          Year_Month, 
+                          c(Year, Month), 
+                          remove = T)
+     
+     park_ts <- ts(gather_park$VisitorCount, frequency = 12, start = c(1979,1))
+     
+     return(park_ts)
+   })
+   
+   park_plotting <- function(park_ts) {
+     park_hw <- HoltWinters(park_ts)
+     park_hw_forecast <- forecast(park_hw, h = 60)
+   
+     return(park_hw_forecast)
+     
+   }
+  ###STOPPED HERE on march 6 
+   output$predict_plot <- renderPlot({
+     plot()
+   })
 }
 
 
