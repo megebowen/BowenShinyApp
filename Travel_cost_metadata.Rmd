@@ -12,8 +12,223 @@ library(knitr)
 
 ```
 
-## Sources for Travel Cost Calculations:
+# Sources for Travel Cost Calculations:
 
-1. Park Entrance Fee: [linked phrase] (https://www.nps.gov/aboutus/entrance-fee-prices.htm)
+
+## 1. Park Entrance Fee (per trip): 
+[linked phrase] (https://www.nps.gov/aboutus/entrance-fee-prices.htm)
 
 - used the per vehicle price -- fees listed "current" or (if applicable) after January 1, 2019
+
+
+
+
+
+## 2. Campground Fee (per day): 
+(https://www.nps.gov/subjects/camping/campground.htm)
+
+- used the individual campground fee
+- Arches: used Devils Garden Campground
+- Badlands: used Cedar Pass Campground
+- Channel Islands: used $15 base rate quoted on their website
+- Glacier: used Bartlett Cove Campground, free permit for camping?!
+- Grand Teton: 6 campgrounds total, all have different opening times and fees. See below for calculations for averge per month
+- Redwood: most are free, except for one that charges $5. not including this outlier in the data
+- Shenandoah: four campgrounds, see below for calculations. **NOTE that none of the campgrounds are open from Nov-Feb**
+- Yellowstone: eleven campgrounds listed on their site (but only 10 are open as of 2019), see below for calculations.
+- Yosemite: thirteen campgrounds, see below for calculations
+- Zion: using the three official campgrounds. see below
+
+
+###Grand Teton Camping Calculations (average price throughout year)
+
+1. Colter Bay: $31 (May-Sept)
+2. Gros Ventre: $29 (May-Oct)
+3. Headwaters: $37.50 (May-Sept)
+4. Jenny Lake: $29 (May-Sept)
+5. Signal Mountain: $32 (May-Otct)
+6. Lizard Creek: $30 (June-Sept)
+7. "Primitive Winter Camping" : $5 (Dec-April)
+
+####Grand Teton Camping Averages ($/day)
+Dec-April: $5 
+May: $31.70
+June-Sept: $31.42
+Oct: $30.50
+Nov: NA (Cannot camp per the website)
+
+###Shenandoah Camping Calculations (average prices throughout year)
+1. Mathews Arm: $15 (May-Oct)
+2. Big Meadows: $20 (Mar-midNov)
+3. Lewis Mountain: $15 (Mar-Oct?)
+4. Loft Mountain: $15 (May-Oct)
+
+####Shenandoah Camping Averages ($/day)
+Dec-Feb: NA
+Mar-Apr: $17.50
+May-Oct: $16.25
+Nov*: $20
+*data assumes $20 fee for every day in November -- Big Meadows is ony open until mid-November. 
+
+###Yellowstone Camping Calculations (average prices throughout the year)
+1. Bridge Bay: $26 (May-Sept)
+2. Canyon: $31 (May-Sept)
+3. Grant Village: $31 (June-Sept)
+4. Madison: $26 (Apr-Oct)
+5. Indian Creek: $15 (June-Sept)
+6. Lewis Lake: $15 (June-Nov)
+7. Mammoth: $20 (ALL YEAR)
+8. Norris: $20 (May-Sept)
+9. Pebble Creek: $15 (June-Sept)
+10. Slough Creek: $15 (June-Oct)
+11. Tower Fall: $15(may-sept)
+
+####Yellowstone Camping Averages ($/day)
+Dec-Mar: $20 (only one campsite open)
+Apr: $23 (two open)
+May: $23 (six open)
+June-Sept: $20.81 (all open)
+Oct: $20.33 (3 open)
+Nov: $17.50 (two open)
+
+###Yosemite Camping Calculations (average prices throughout the year)
+1. Upper Pines: $26 (ALL YEAR)
+2. Lower Pines: $ 26 (April-Oct)
+3. North Pines: $26 (Mar-Oct)
+4. Camp 4: $12 (for two people, all year)
+5. Wawona: $26 (all year)
+6. Bridalveil Creek: $18 (Jul-Sept)
+7. Hogdon Meadows: $ 26 (Apr-Oct)
+8. Crane Flat: $26 (May-Oct)
+9. Tamarack Flat: $12 (May-Oct)
+10. White Wolf: $18 (June-Sep)
+11. Yosemite Creek: $12 (Jul-Oct)
+12. Porcupine Flat: $12 (Jul-Oct)
+13. Tuolumne Meadows: $26 (Jun-Sept)
+
+####Yosemite Camping Averages ($/day)
+Nov-Feb: $21.33 (3 open)
+Mar: $22.50 (4 open)
+Apr: $23.67 (6 open)
+May: $22.50 (8 open)
+Jun: $22.40 (10 open)
+Jul-Sept: $20.46 (all 13 open)
+Oct: $20.40 (10 open)
+
+###Zion Camping Calculations:
+1. Lava : $0 free? (May-Sept)
+2. South : $20 (Feb-Nov)
+3. Watchman: $30 (all year)
+
+####Zion Camping Averages ($/day)
+Dec-Jan: $30
+Feb-Apr: $25
+May-Sept: $16.67
+Oct-Nov: $25
+
+
+
+
+## 3. Hotel Prices (per day) : 
+https://www.nationalparkreservations.com
+
+- used an average price for each month for three local lodges/hotels from the above website
+- chose the three lowest price under category lodges/hotels :: trying to save money here!
+- price based on one room, 2 people occupancy, rate for 2 nights
+- all prices calculated for next year (Jan 2020, etc)
+- used lowest listed price for a room
+- price does NOT include taxes or other room fees
+- NOT including any seasonality in pricing, too much detail and I don't want to collect that fine scale of information
+
+###1. Arches:
+- Aarchway Inn ($80/night)
+- Best Western Greenwell ($87/night)
+- Best Western Canyonlands ($94/night)
+
+####average price per day (no monthly changes):
+80 + 87+ 94/3 = 87
+
+
+### 2. Badlands (only three listed)
+- Best Western Plains Motel ($82/night)
+- Badlands Inn ($130/night)
+- Cedar Pass Lodge ($176/night)
+
+####average price per day (no monthly changes):
+83+130+176/3 = 129.67
+
+### 3. Channel Islands: NO LODGING: Have to camp!
+
+### 4. Glacier
+- Red Lion Kalispell ($63/night) 
+- Baymont by Wyndham ($65/night)
+- Hilton Garden Inn Kalisplell ($79/night)
+
+####average price per day:
+63+65+79/3= 69
+
+### 5. Grand Teton
+- Snow King Resort & Condos ($99/night)
+- Lexington @ Jackson Hole ($110/night)
+- Anvil Hotel ($110/night)
+
+####average price per day:
+99+110+110/3 = 106.33
+
+### 6. Redwood (only three listed)
+- Redwood Coast Vacation Rentals ($55/night)
+- Woodland Villa Cabins ($90/night)
+- Elk Meadow Cabins ($159/night)
+
+####average price per day:
+55+90+159/3 = 101.33
+
+### 7. Shenandoah
+- quality inn skyline drive ($57/night)
+- Days Inn ($70/night)
+- Quality Inn ($75/night)
+
+####average price per day:
+57+70+75/3 = 67.33
+
+### 8. Yellowstone
+- Historic Madison ($50/night)
+- Three Bear Lodge ($69/night)
+- Absaroka Lodge ($85/night)
+
+####average price per day:
+50+69+85/3= 68
+
+### 9. Yosemite
+- Yosemite Sierra Inn ($74/night)
+- Cedar Lodge ($79/night)
+- Sierra Sky Ranch ($89/night)
+
+####average price per day:
+74+79+89/3= 80.67
+
+
+### 10. Zion
+- Parry Lodge ($69/night)
+- Majestice View Lodge ($69/night)
+- Driftwood Lodge ($79/night)
+
+####average price per day:
+69+69+79/3= 72.33
+
+## 4. Car ( )
+
+## 5. Plane price
+
+## 6. Additional Fees?
+
+- for Channel Islands: need to include roundtrip boat price 
+###roundtrip Boat Price per Island:
+-
+-
+
+**average price for XXX islands is == :: $$... + [Boat]$$**
+
+## Travel Cost Formula
+
+$$TC = PE + [CF*x]||[HP*x] + 2[Car]||2[Plane] + AP$$
