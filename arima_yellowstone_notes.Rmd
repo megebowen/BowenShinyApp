@@ -19,26 +19,62 @@ library(forecast)
 library(gridExtra)
 ```
 
+```{r clean_month}
+##Need to clean the monthly data and make into tidy format
+arches_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/arches_vis_month.csv") %>%
+  mutate(ParkName = "Arches")
 
-```{r load_data_Yellowstone_yr}
+badlands_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/badlands_vis_month.csv") %>%
+  mutate(ParkName = "Badlands")
 
-yellowstone_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/yellowstone_vis_year.csv")
-yellowstone_vis_year <- yellowstone_vis_year[-1,]
-colnames(yellowstone_vis_year) <- yellowstone_vis_year[1,]
-yellowstone_vis_year <- yellowstone_vis_year[-1,]
+channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vis_month.csv") %>%
+  mutate(ParkName = "Channel Islands")
 
+glacier_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/glacier_vis_month.csv") %>%
+  mutate(ParkName = "Glacier")
+
+gteton_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/gteton_vis_month.csv") %>%
+  mutate(ParkName = "Grand Teton")
+
+redwood_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/redwood_vis_month.csv") %>%
+  mutate(ParkName = "Redwood")
+
+shenandoah_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/shenandoah_vis_month.csv") %>%
+  mutate(ParkName = "Shenandoah")
+
+yellowstone_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yellowstone_vis_month.csv") %>%
+  mutate(ParkName = "Yellowstone")
+
+yosemite_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yosemite_vis_month.csv") %>%
+  mutate(ParkName = "Yosemite")
+
+zion_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/zion_vis_month.csv") %>%
+  mutate(ParkName = "Zion")
 
 
 ```
 
-```{r clean_month}
-##Need to clean the monthly data and make into tidy format
+```{r monthly_combine}
 
-yellowstone_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yellowstone_vis_month.csv") %>%
-  select(-Textbox5)
-yellowstone_vis_month$Year <- as.factor(yellowstone_vis_month$Year)
+all_month <- rbind(arches_vis_month, badlands_vis_month, channel_vis_month, glacier_vis_month, gteton_vis_month, redwood_vis_month, shenandoah_vis_month, yellowstone_vis_month, yosemite_vis_month, zion_vis_month)
 
-gather_up <- gather(yellowstone_vis_month, key = "Month", value = "VisitorCount", JAN:DEC)
+all_month_visitation <- write_csv(all_month, "all_month_visitation.csv")
+
+```
+
+
+```{r separate_tidy}
+
+#read in all data from mother .csv
+all_month_visitation <- read_csv("~/github/BowenShinyApp/all_month_visitation.csv")
+
+yellowstone <- all_month_visitation %>% 
+  filter(ParkName =="Yellowstone") %>% 
+  select(-ParkName)
+
+yellowstone$Year <- as.factor(yellowstone$Year)
+
+gather_up <- gather(yellowstone, key = "Month", value = "VisitorCount", JAN:DEC)
 #gather_up <- as.data.frame(gather_up)
 gather_up$Month <- as.factor(gather_up$Month)
 
@@ -99,30 +135,29 @@ yellowstone_upper <- yellowstone_hw_forecast$upper
 yellowstone_lower <- yellowstone_hw_forecast$lower
 
 yellowstone_average <- yellowstone_hw_forecast$mean
+yellowstone_average
+
 ```
 
 ```{r general_plot_code}
 
-renderPlot({
-  
-      x    <- yellowstone_vis_year
-      
-      x_vis_year <- x %>% 
-        mutate(Visitors_Mil = RecreationVisitors/1000000)
-      year_plot<- ggplot(yellowstone_vis_year, aes(x=Year, y=Visitors_Mil)) + 
-        geom_point() +
-        labs(x= "Year",
-             y= "Number of Visitors \n (millions)",
-             title = "Yearly Visitors to Yellowstone",
-             subtitle = "(1904-2018)") +
-        theme_classic() +
-        theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
-      
-      return(year_plot)
-   })
+# Convert Holt Winters Predictions into df
+yellowstone_hw_df <- data.frame(yellowstone_hw_forecast)
+month_seq <- seq(1,60)
+yellowstone_hw_plot_df <- data.frame(month_seq, yellowstone_hw_df)
+
+
+#HW Predictions. PLots the average value ("Point.Forecast")
+yellowstone_hw_plot <- ggplot(yellowstone_hw_df, 
+                              aes(x=month_seq, y = Point.Forecast)) +
+  geom_line()
+
+yellowstone_hw_plot
 
 ```
+
+
+##ARIMA code below. DO NOT USE
 
 
 ```{r arima}
