@@ -2,15 +2,19 @@ library(shiny)
 library(tidyverse)
 library(shinythemes)
 library(ggfortify)
+library(plotly)
 library(tseries)
 library(forecast)
 library(gridExtra)
+
+all_year_visitation <- read_csv("~/github/BowenShinyApp/all_year_visitation.csv")
+
 
 # Define UI 
 ui <- fluidPage(
    
    # Application title
-   titlePanel("Historic National Park Visitation Data and Predictions"),
+   titlePanel("US National Park Visitation: Past and Future"),
    
    navbarPage("",
               
@@ -19,36 +23,30 @@ ui <- fluidPage(
                        
                        sidebarLayout(
                          sidebarPanel(
-                           selectInput("select", label = h3("National Park"), 
-                                       choices = list("Arches" = 1, "Badlands" = 2, "Channel Islands" = 3, "Glacier" = 4, "Grand Teton" = 5, "Redwood" = 6, "Shenandoah" = 7, "Yellowstone" = 8, "Yosemite" = 9, "Zion" = 10), 
-                                       selected = 1),
-                           
-                           hr(),
-                           fluidRow(column(3, verbatimTextOutput("value")))
-                           ,
-                           
-                           br(),
-
-                           radioButtons("radio", label = h3("Month"),
-                                        choices = list("January" = 1, "February" = 2, "March" = 3, "April" = 4, "May" = 5, "June" = 6, "July" = 7, "August" = 8, "September" = 9, "October" = 10, "November" = 11, "December" = 12), 
-                                        selected = 1),
+                           selectInput(inputId = "year_graph_choice",
+                                       label = ("Choose a National Park:"), 
+                                       choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion")
+                                       ),
                            
                            hr(),
                            fluidRow(column(3, verbatimTextOutput("value")))
                          ),
-      
-                         mainPanel(
-                           plotOutput("year_plot")
+                           
+                           mainPanel(
+                             plotlyOutput("year_plot")
                            )
+                         
+      
                        )),
               
               tabPanel("Predicted Trends",
                        
                        sidebarLayout(
                          sidebarPanel(
-                               selectInput("select", label = h3("National Park"), 
-                                           choices = list("Arches" = 1, "Badlands" = 2, "Channel Islands" = 3, "Glacier" = 4, "Grand Teton" = 5, "Redwood" = 6, "Shenandoah" = 7, "Yellowstone" = 8, "Yosemite" = 9, "Zion" = 10), 
-                                           selected = 1),
+                               selectInput("select", inputId = "year_graph_choice",
+                                           label = ("Choose a National Park:"), 
+                                           choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion") 
+                                           ),
                                
                                hr(),
                                fluidRow(column(3, verbatimTextOutput("value")))
@@ -58,23 +56,10 @@ ui <- fluidPage(
                        mainPanel()
                        )),
               
-              tabPanel("Travel Costs")),
+              tabPanel("Travel Costs")
+              
+              )
    
-   # Sidebar with a slider input for number of bins 
-   sidebarLayout(
-      sidebarPanel(
-         sliderInput("bins",
-                     "Number of bins:",
-                     min = 1,
-                     max = 50,
-                     value = 30)
-      ),
-      
-      # Show a plot of the generated distribution
-      mainPanel(
-         plotOutput("distPlot")
-      )
-   )
 )
 
 
@@ -86,32 +71,25 @@ ui <- fluidPage(
 
 # Define Server
 server <- function(input, output) {
-   
-   output$distPlot <- renderPlot({
-      # generate bins based on input$bins from ui.R
-      x    <- faithful[, 2] 
-      bins <- seq(min(x), max(x), length.out = input$bins + 1)
-      
-      # draw the histogram with the specified number of bins
-      hist(x, breaks = bins, col = 'darkgray', border = 'white')
+  
+   year    <- reactive({
+     subset(all_year_visitation, ParkName %in% input$graph_year_choice)
    })
    
-   output$year_plot <- renderPlot({
-     x    <- yellowstone_vis_year
-     
-     x_vis_year <- x %>% 
-       mutate(Visitors_Mil = RecreationVisitors/1000000)
-     year_plot<- ggplot(yellowstone_vis_year, aes(x=Year, y=Visitors_Mil)) + 
-       geom_point() +
+   output$year_plot <- renderPlotly({
+     yr_plot<- ggplot(all_year_visitation) +
+       geom_point(aes(x=Year, y=Visitors_Mil),
+                  subset(ParkName == year)) +
        labs(x= "Year",
             y= "Number of Visitors \n (millions)",
-            title = "Yearly Visitors to Yellowstone",
+            title = "Yearly Visitors to input$year",
             subtitle = "(1904-2018)") +
        theme_classic() +
        theme(plot.title = element_text(hjust = 0.5),
-             plot.subtitle = element_text(hjust = 0.5))
+             plot.subtitle = element_text(hjust = 0.5),
+             legend.position = "none")
      
-     return(year_plot)
+     ggplotly(yr_plot)
    })
 }
 
