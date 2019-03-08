@@ -1,0 +1,93 @@
+---
+title: "Travel Cost Calculation Notes"
+author: "Meghan Bowen"
+date: "3/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages}
+
+library(tidyverse)
+library(knitr)
+library(janitor)
+
+```
+
+```{r load_data}
+
+np_travel_costs <- read_csv("~/github/BowenShinyApp/np_travel_costs.csv")
+
+
+months <- factor(levels = c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"))
+np_travel_costs$Month <- fct_relevel(np_travel_costs$Month, months)
+
+```
+
+```{r calculate_cost}
+
+# filter by Park & Month
+choose_park_mo <- np_travel_costs %>% 
+  filter(ParkName == "Arches") %>% 
+  filter(Month == "Mar")
+
+# filter by Transportation Selections
+choose_transpo <- choose_park_mo %>% 
+  select(ParkName, Month, Entrance_Fee, Camp_Day, Fly_Trip, Addnl_Fly_Fee, Addnl_Boat_Fee) ## need to include Addnl_Fee IF 1) Selected Channel Islands OR 2) Selected Flying as transportation
+
+TravelCost_Arches <- choose_transpo$Entrance_Fee + choose_transpo$Camp_Day + 2*(choose_transpo$Fly_Trip) + choose_transpo$Addnl_Fly_Fee + choose_transpo$Addnl_Boat_Fee 
+
+print(TravelCost_Arches)
+
+
+```
+
+```{r test_forNA}
+
+# need to return NA value if any value is listed as NA
+
+## Step 1: filter by Park & Month
+choose_park_mo <- np_travel_costs %>% 
+  filter(ParkName == "Channel Islands") %>% 
+  filter(Month == "Jul")
+
+## Step 2: select transportation. In this case, a choice of flight will return NA
+choose_transpo <- choose_park_mo %>% 
+  select(ParkName, Month, Entrance_Fee, Camp_Day, Fly_Trip, Addnl_Fly_Fee, Addnl_Boat_Fee)
+
+
+## Step 3: Calculate travel cost & RETURN WITH NA
+TravelCost_CI <- choose_transpo$Entrance_Fee + choose_transpo$Camp_Day + 2*(choose_transpo$Fly_Trip) + choose_transpo$Addnl_Fly_Fee + choose_transpo$Addnl_Boat_Fee 
+
+print(TravelCost_CI) ## looks like it works so that's nice!
+
+```
+
+## NEED TO WORK ON ADDNL FLY FEE OUTPUT
+
+```{r graph_output}
+
+# calculate Travel Cost for each month for EACH SELECTION
+
+## Step 1: filter by Park
+choose_park <- np_travel_costs %>% 
+  filter(ParkName == "Arches")
+
+## Step 2: create travel cost column
+choose_park_tc <- choose_park %>% 
+  mutate(TravelCost = Entrance_Fee + Camp_Day + Car_Trip + Addnl_Boat_Fee)
+
+
+
+# plot the travel costs
+ggplot(choose_park_tc,
+       aes(x=Month, y=TravelCost)) +
+  geom_point() +
+  geom_line()
+
+```
+
+
