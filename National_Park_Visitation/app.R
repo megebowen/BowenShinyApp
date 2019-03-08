@@ -59,7 +59,8 @@ ui <- fluidPage(
             
                        mainPanel(
                          plotOutput(outputId = "predict_plot",
-                                    height = "450px"))
+                                    height = "450px"),
+                         tableOutput("HWTable"))
                        )),
               
               tabPanel("Travel Costs",
@@ -114,11 +115,12 @@ server <- function(input, output) {
    
 ## SECOND OUTPUTS: HOLT-WINTERS PREDICTIONS   
    ## NEED TO FIX!!! maybe make two functions, one with the reactive inputs and one with the plotting?
+   
    park_predictions <- reactive({
      
      park_filter <- all_month_visitation %>% 
-     filter(ParkName == input$predict_choice) %>% 
-     select(-ParkName)
+       filter(ParkName == input$predict_choice) %>% 
+       select(-ParkName)
      
      gather_up <- gather(park_filter, key = "Month", value = "VisitorCount", JAN:DEC)
      gather_up$Month <- as.factor(gather_up$Month)
@@ -134,20 +136,26 @@ server <- function(input, output) {
      
      park_ts <- ts(gather_park$VisitorCount, frequency = 12, start = c(1979,1))
      
-     return(park_ts)
-   })
-   
-   park_plotting <- function(park_ts) {
      park_hw <- HoltWinters(park_ts)
      park_hw_forecast <- forecast(park_hw, h = 60)
-   
-     return(park_hw_forecast)
      
-   }
+     return(park_hw_forecast)
+   })
+   
+   
+  
   ###STOPPED HERE on march 6 
    output$predict_plot <- renderPlot({
-     plot()
+     
+     plot(park_predictions())
    })
+   
+   output$HWTable <- renderTable({
+     park_predictions
+     
+     
+   })
+   
 }
 
 
