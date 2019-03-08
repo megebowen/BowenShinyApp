@@ -85,6 +85,8 @@ server <- function(input, output) {
    
 
 ## FIRST OUTPUTS: YEARLY GRAPH
+  
+  ## Plot of Year vs. # of Millions Visitors
    output$year_plot <- renderPlot({
      
      ggplot(filter(all_year_visitation,
@@ -92,14 +94,17 @@ server <- function(input, output) {
        geom_point(aes(x=Year, y = Visitors_Mil)) +
        labs(x= "Year",
             y= "Number of Visitors \n (millions)",
-            title = paste("Yearly Visitors to", input$year_graph_choice)) +
+            title = paste("Yearly Recreation Visitors to", input$year_graph_choice)) +
        theme_classic() +
-       theme(plot.title = element_text(hjust = 0.5),
+       theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
              plot.subtitle = element_text(hjust = 0.5),
-             legend.position = "none")
+             legend.position = "none",
+             axis.title = element_text(size=16),
+             axis.text = element_text(size=12))
      
    })
    
+   ## Hover Function to show Year & Visitor Values
    output$yr_hover <- renderPrint({
      
      hover_fxn <- function(e) {
@@ -111,12 +116,14 @@ server <- function(input, output) {
      
      paste(hover_fxn(input$plot_hover))
    
-     })
+    })
 
    
-## SECOND OUTPUTS: HOLT-WINTERS PREDICTIONS   
-   ## NEED TO FIX!!! maybe make two functions, one with the reactive inputs and one with the plotting?
    
+   
+## SECOND OUTPUTS: HOLT-WINTERS PREDICTIONS   
+   
+   ## REACTIVE OUTPUT 1: For the HW Plot
    park_predictions <- reactive({
      
      park_filter <- all_month_visitation %>% 
@@ -143,6 +150,7 @@ server <- function(input, output) {
      return(park_hw_forecast)
    })
    
+  ##REACTIVE OUTPUT 2: For the table 
   predict_table <- reactive ({
     
     park_filter <- all_month_visitation %>% 
@@ -174,7 +182,8 @@ server <- function(input, output) {
     return(pred_table)
   })
   
-  ###STOPPED HERE on march 6 
+  
+  ##Holt-Winters Predictions Plot
    output$predict_plot <- renderPlot({
      
      plot(park_predictions(),
@@ -183,6 +192,7 @@ server <- function(input, output) {
           ylab = "# of Visitors")
    })
    
+  ##Holt-Winters Predictions Table 
    output$HWTable <- renderTable({
      predict_table()
      

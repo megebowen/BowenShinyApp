@@ -9,5 +9,23 @@ ggplot(filter(marvel, ALIGN == input$side), aes(x = Year)) +
   geom_bar(aes(fill = SEX), position = "fill") +
   scale_fill_brewer(palette = "RdPu") +
   theme_dark()
+#ALIGN is column name
 
-ALIGN is column name
+
+## OVERALL
+###need a theme
+###need consisten sizes on select box
+
+###SUMMARY
+##need to add one!
+
+## OUTPUT 1
+### include month & year visitation data table?
+### fix hover value to show year value as X and visits value as Y
+## fix sizes?
+
+## OUTPUT 2
+### wrap table?
+## fix sizes?
+
+## OUTPUT 3
