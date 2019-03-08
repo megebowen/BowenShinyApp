@@ -2,6 +2,7 @@ library(shiny)
 library(tidyverse)
 library(shinythemes)
 library(ggfortify)
+library(janitor)
 library(plotly)
 library(tseries)
 library(forecast)
@@ -142,19 +143,51 @@ server <- function(input, output) {
      return(park_hw_forecast)
    })
    
-   
+  predict_table <- reactive ({
+    
+    park_filter <- all_month_visitation %>% 
+      filter(ParkName == input$predict_choice) %>% 
+      select(-ParkName)
+    
+    gather_up <- gather(park_filter, key = "Month", value = "VisitorCount", JAN:DEC)
+    gather_up$Month <- as.factor(gather_up$Month)
+    
+    months <- factor(levels = c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"))
+    gather_up$Month <- fct_relevel(gather_up$Month, months)
+    
+    gather_park <- gather_up[order(gather_up$Year),]
+    gather_park <- unite(gather_park,
+                         Year_Month, 
+                         c(Year, Month), 
+                         remove = T)
+    
+    park_ts <- ts(gather_park$VisitorCount, frequency = 12, start = c(1979,1))
+    
+    park_hw <- HoltWinters(park_ts)
+    park_hw_forecast <- forecast(park_hw, h = 60)
+    
+    pred_table <- as.data.frame(park_hw_forecast) %>% 
+      clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
+      select(point_forecast) %>% 
+      plyr::rename(c('point_forecast' = 'Mean Forecasted Value'))
+    
+    return(pred_table)
+  })
   
   ###STOPPED HERE on march 6 
    output$predict_plot <- renderPlot({
      
-     plot(park_predictions())
+     plot(park_predictions(),
+          main = paste("Historic and Predicted Visitation to", input$predict_choice, "\n (By Month)"),
+          xlab= "Year",
+          ylab = "# of Visitors")
    })
    
    output$HWTable <- renderTable({
-     park_predictions
+     predict_table()
      
-     
-   })
+   },
+   include.rownames = T)
    
 }
 
