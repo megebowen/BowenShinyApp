@@ -16,9 +16,9 @@ all_month_visitation <- read_csv("~/github/BowenShinyApp/all_month_visitation.cs
 all_month_visitation$ParkName <- as.factor(all_month_visitation$ParkName)
 all_month_visitation$Year <- as.factor(all_month_visitation$Year)
 
-# Read in HW Forecasting (DF?)
-
 # Read in Travel Cost DF
+
+
 
 # Define UI 
 ui <- fluidPage(
@@ -28,10 +28,24 @@ ui <- fluidPage(
    
    navbarPage("",
               theme = shinytheme("simplex"),
+      
               
+  # TAB 1: Summary of the App
               tabPanel("Summary",
-                       h2("XXXXX"),
-                       p("Thanks for checking out my app!"),
+                       h2(""),
+                       p("Thanks for checking out my shiny app! I have collected data for recreation visits to ten United States National Parks:"),
+                       p(tags$ul(
+                         tags$li("Arches"),
+                         tags$li("Badlands"),
+                         tags$li("Channel Islands"),
+                         tags$li("Glacier"),
+                         tags$li("Grand Teton"),
+                         tags$li("Redwood"),
+                         tags$li("Shenandoah"),
+                         tags$li("Yellowstone"),
+                         tags$li("Yosemite"),
+                         tags$li("Zion")
+                       )),
                        h3("How have visitation rates changed over time?"),
                        p("Under the", tags$b("Historic Trends"), "tab, you can view overall trends in yearly attendance at a National Park of choice, up to 2018. The starting year will vary based on the relative age of the park and/or when the National Park Service first starting collecting visitation data for that park."),
                        h3("What will National Park visitation be in the future?"),
@@ -50,7 +64,11 @@ ui <- fluidPage(
                        tags$br(),
                        p("See the" , tags$b("Metadata"), "tab for more information on data sources and travel cost parameter calculations.")
                        ),
-              
+     
+  
+  
+  
+  # TAB 2: Graph Historic Vistiation Trends         
               tabPanel("Historic Trends",
                        
                        sidebarLayout(
@@ -68,8 +86,11 @@ ui <- fluidPage(
                            verbatimTextOutput("yr_hover")
       
                        ))),
-
-              
+  
+  
+  
+  
+  # TAB 3: Forecast Monthly Visitation using Holt-Winters smoothing
               tabPanel("Predicted Trends",
                        
                        sidebarLayout(
@@ -87,6 +108,7 @@ ui <- fluidPage(
                        )),
               
               
+  # TAB 4: Calculate Travel Cost to a Park using Inputs 
               tabPanel("Travel Costs",
                        
                        sidebarLayout(
@@ -120,8 +142,11 @@ ui <- fluidPage(
 
                          ))
                        ),
-              
-              
+  
+  
+  
+  
+  # TAB 5: Metadata info and Calculations
               tabPanel("Metadata",
                        h3("Data Sources")
                        )
@@ -141,7 +166,7 @@ ui <- fluidPage(
 server <- function(input, output) {
    
 
-## FIRST OUTPUTS: YEARLY GRAPH
+## FIRST OUTPUTS: TAB 2 (Yearly Visitation)
   
   ## Plot of Year vs. # of Millions Visitors
    output$year_plot <- renderPlot({
@@ -238,6 +263,7 @@ server <- function(input, output) {
     
     return(pred_table)
   })
+  
   
   
   ##Holt-Winters Predictions Plot
