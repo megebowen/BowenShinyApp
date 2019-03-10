@@ -24,17 +24,39 @@ all_month_visitation$Year <- as.factor(all_month_visitation$Year)
 ui <- fluidPage(
    
    # Application title
-   titlePanel("US National Park Visitation: Past and Future"),
+   titlePanel("US National Park Visitation"),
    
    navbarPage("",
+              theme = shinytheme("simplex"),
               
-              tabPanel("Summary"),
+              tabPanel("Summary",
+                       h2("XXXXX"),
+                       p("Thanks for checking out my app!"),
+                       h3("How have visitation rates changed over time?"),
+                       p("Under the", tags$b("Historic Trends"), "tab, you can view overall trends in yearly attendance at a National Park of choice, up to 2018. The starting year will vary based on the relative age of the park and/or when the National Park Service first starting collecting visitation data for that park."),
+                       h3("What will National Park visitation be in the future?"),
+                       p("Under the", tags$b("Predicted Trends"), "tab, you can view a forecasted model of selected park attendance from 2019 to 2023. Each forecast is calculated using the Holt-Winters method of smoothing to take into account the seasonality of National Park visitation. A table is also presented for the selected National Park, which shows the average predicted attendance value for each month from 2019-2023."),
+                       h3("How much does it cost to visit a National Park?"),
+                       p("Under the", tags$b("Travel Costs"), "tab, you can view the cost of travelling and staying at a selected National Park. The following parameters are used to calculate travel cost:"),
+                       p(tags$ul(
+                         tags$li(tags$em("Entrance Fee:"), "Price for National Park entrance (if applicable)"),
+                         tags$li(tags$em("Campsite Rental:"), "Average price to rent a campsite at the Park"),
+                         tags$li(tags$em("Lodging/Hotel Rate:"), "Average price to rent a room at a lodge or hotel near the Park"),
+                         tags$li(tags$em("Car Mileage:"), "Roundtrip cost to drive from Santa Barbara to the Park (and back)"),
+                         tags$li(tags$em("Plane Trip:"), "Roundtrip cost to fly from LAX to an airport nearest the Park (and back), including additional auto mileage cost"),
+                         tags$li(tags$em("Additional Fee(s):"), "Any additional fees to get to the Park")
+                       )),
+                       tags$br(),
+                       tags$br(),
+                       p("See the" , tags$b("Metadata"), "tab for more information on data sources and travel cost parameter calculations.")
+                       ),
+              
               tabPanel("Historic Trends",
                        
                        sidebarLayout(
                          sidebarPanel(
                            selectInput("year_graph_choice",
-                                       "Choose a National Park:", 
+                                       h4("Choose a National Park:"), 
                                        c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion")
                                        )),
                          
@@ -53,7 +75,7 @@ ui <- fluidPage(
                        sidebarLayout(
                          sidebarPanel(
                                selectInput("predict_choice",
-                                           label = "Choose a National Park:", 
+                                           label = h4("Choose a National Park:"), 
                                            choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion") 
                                            )),
                      
@@ -64,10 +86,45 @@ ui <- fluidPage(
                          tableOutput("HWTable"))
                        )),
               
+              
               tabPanel("Travel Costs",
                        
+                       sidebarLayout(
+                         sidebarPanel(
+                           selectInput("travel_park",
+                                       label = h4("Choose a National Park:"), 
+                                       choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion")),
+                           
+                           tags$hr(),
+                           
+                           selectInput("travel_month", 
+                                        label = h4("When to Stay?"),
+                                        choices = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")),
+                           
+                           tags$hr(),
+                           
+                           radioButtons("travel_stay",
+                                        label = h4("Where to Stay?"),
+                                        choices = c("Campsite", "Hotel/Lodge")),
+                           
+                           tags$hr(),
+                           
+                           radioButtons("travel_transpo",
+                                        label = h4("How to Get There?"),
+                                        choices = c("Car", "Plane"))
+                         ),
+                         
+                       
                        mainPanel(
+                         
+
                          ))
+                       ),
+              
+              
+              tabPanel("Metadata",
+                       h3("Data Sources")
+                       )
                        
               
               )
@@ -198,6 +255,17 @@ server <- function(input, output) {
      
    },
    include.rownames = T)
+   
+   
+   
+##THIRD OUTPUTS: Travel Cost Information   
+  
+  ## ONE: VALUE from inputs
+   
+  ## TWO: TABLE with all monthly predictions
+   
+  ## THREE: GRAPH with cost over the year??
+    
    
 }
 
