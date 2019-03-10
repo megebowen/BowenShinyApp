@@ -17,7 +17,7 @@ all_month_visitation$ParkName <- as.factor(all_month_visitation$ParkName)
 all_month_visitation$Year <- as.factor(all_month_visitation$Year)
 
 # Read in Travel Cost DF
-
+np_travel_costs <- read_csv("~/github/BowenShinyApp/np_travel_costs.csv")
 
 
 # Define UI 
@@ -121,24 +121,24 @@ ui <- fluidPage(
                            
                            selectInput("travel_month", 
                                         label = h4("When to Stay?"),
-                                        choices = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")),
+                                        choice = list("January"="Jan", "February" = "Feb", "March" = "Mar", "April" = "Apr", "May", "June" = "Jun", "July" = "Jul", "August" = "Aug", "September" = "Sep", "October" = "Oct", "November" = "Nov", "December"="Dec")), #names in data are shortened, "long name" = "short name (in data)"
                            
                            tags$hr(),
                            
                            radioButtons("travel_stay",
                                         label = h4("Where to Stay?"),
-                                        choices = c("Campsite", "Hotel/Lodge")),
+                                        choices = c("Campsite" = 1, "Hotel/Lodge" = 2)), 
                            
                            tags$hr(),
                            
                            radioButtons("travel_transpo",
                                         label = h4("How to Get There?"),
-                                        choices = c("Car", "Plane"))
+                                        choices = c("Car" = 1, "Plane" = 2))
                          ),
                          
                        
                        mainPanel(
-                         
+                         textOutput("travel_value")
 
                          ))
                        ),
@@ -286,10 +286,32 @@ server <- function(input, output) {
    
 ##THIRD OUTPUTS: Travel Cost Information   
   
-  ## ONE: VALUE from inputs
+  ## REACTIVE OUTPUT 1: VALUE from inputs
+  travel_value <- reactive({
+    
+    travel_filter <- np_travel_costs %>% 
+      filter(ParkName == input$travel_park) %>% 
+      filter(Month == input$travel_month) %>% 
+      mutate(Travel_Cost = Entrance_Fee + 
+               if_else(input$travel_transpo == 1, Car_Trip, Fly_Trip) +
+               ifelse(input$travel_stay == 1, Camp_Day, Hotel_Day) +
+               Addnl_Boat_Fee)
+
+    return(travel_filter)
+
+  })
+    
+    ######NEED TO WORK ON TRAVEL COST FORMULA
    
+    ####output: Travel Cost Value from outputs
+  
+  output$travel_value <- renderPrint({
+    travel_value()
+  })
+  
   ## TWO: TABLE with all monthly predictions
    
+  
   ## THREE: GRAPH with cost over the year??
     
    

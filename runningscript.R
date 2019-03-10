@@ -1,4 +1,6 @@
-
+if (req(input$travel_stay) = 1 {select(-np_travel_costs$Hotel_Day)}
+    else if (req(input$travel_stay) = 2 {select(-np_travel_costs$Camp_Day)})) %>% 
+  if (req(input$travel_transpo) = 1 {select(-np_travel_costs$Fly_Trip)} else if req((input$travel_transpo) = 2 {select(-np_travel_costs$Car_Trip)}))
 
 ## OVERALL
 
