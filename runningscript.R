@@ -1,6 +1,3 @@
-if (req(input$travel_stay) = 1 {select(-np_travel_costs$Hotel_Day)}
-    else if (req(input$travel_stay) = 2 {select(-np_travel_costs$Camp_Day)})) %>% 
-  if (req(input$travel_transpo) = 1 {select(-np_travel_costs$Fly_Trip)} else if req((input$travel_transpo) = 2 {select(-np_travel_costs$Car_Trip)}))
 
 ## OVERALL
 
@@ -13,10 +10,14 @@ if (req(input$travel_stay) = 1 {select(-np_travel_costs$Hotel_Day)}
 ## fix sizes?
 
 ## OUTPUT 2
-### wrap table?
-## fix sizes?
+### fix number look on slider
+### connect slider to table
+### fix mean forecast output in table
 
 ## OUTPUT 3
+### fix value output
+### need to get table working
+
 
 ## METADATA
 

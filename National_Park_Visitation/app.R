@@ -1,23 +1,31 @@
+# Load Packages
 library(shiny)
 library(tidyverse)
 library(shinythemes)
 library(ggfortify)
 library(janitor)
+library(data.table)
 library(plotly)
 library(tseries)
 library(forecast)
 
-# Read in Yearly Visitation DF
+
+# Load Data
+
+## Read in Yearly Visitation DF
 all_year_visitation <- read_csv("~/github/BowenShinyApp/all_year_visitation.csv")
 all_year_visitation$ParkName <- as.factor(all_year_visitation$ParkName)
 
-# Read in Monthly Visitation DF
+## Read in Monthly Visitation DF
 all_month_visitation <- read_csv("~/github/BowenShinyApp/all_month_visitation.csv")
 all_month_visitation$ParkName <- as.factor(all_month_visitation$ParkName)
 all_month_visitation$Year <- as.factor(all_month_visitation$Year)
 
-# Read in Travel Cost DF
+## Read in Travel Cost DF
 np_travel_costs <- read_csv("~/github/BowenShinyApp/np_travel_costs.csv")
+np_travel_costs <- as.data.frame(np_travel_costs)
+
+
 
 
 # Define UI 
@@ -46,11 +54,11 @@ ui <- fluidPage(
                          tags$li("Yosemite"),
                          tags$li("Zion")
                        )),
-                       h3("How have visitation rates changed over time?"),
+                       h3("What does past visitation look like?"),
                        p("Under the", tags$b("Historic Trends"), "tab, you can view overall trends in yearly attendance at a National Park of choice, up to 2018. The starting year will vary based on the relative age of the park and/or when the National Park Service first starting collecting visitation data for that park."),
-                       h3("What will National Park visitation be in the future?"),
+                       h3("What will visitation be in the near future?"),
                        p("Under the", tags$b("Predicted Trends"), "tab, you can view a forecasted model of selected park attendance from 2019 to 2023. Each forecast is calculated using the Holt-Winters method of smoothing to take into account the seasonality of National Park visitation. A table is also presented for the selected National Park, which shows the average predicted attendance value for each month from 2019-2023."),
-                       h3("How much does it cost to visit a National Park?"),
+                       h3("How much does it cost to visit?"),
                        p("Under the", tags$b("Travel Costs"), "tab, you can view the cost of travelling and staying at a selected National Park. The following parameters are used to calculate travel cost:"),
                        p(tags$ul(
                          tags$li(tags$em("Entrance Fee:"), "Price for National Park entrance (if applicable)"),
@@ -98,12 +106,19 @@ ui <- fluidPage(
                                selectInput("predict_choice",
                                            label = h4("Choose a National Park:"), 
                                            choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion") 
-                                           )),
+                                           ),
+                               sliderInput("predict_year_slider",
+                                           label = h4("Prediction Year(s):"),
+                                           min = 2019,
+                                           max = 2023,
+                                           value = c(2019, 2020, 2021, 2022, 2023))),
                      
             
                        mainPanel(
                          plotOutput(outputId = "predict_plot",
                                     height = "450px"),
+                         tags$br(),
+                         h4("Table with Predictions"),
                          tableOutput("HWTable"))
                        )),
               
@@ -138,7 +153,14 @@ ui <- fluidPage(
                          
                        
                        mainPanel(
-                         textOutput("travel_value")
+                         h4(paste("Travel Cost from Santa Barbara to", "in")),
+                         textOutput("travel_value"),
+                         tags$hr(),
+                         h4("Predicted # of Visitors (2019)"),
+                         textOutput("travel_predict"),
+                         tags$hr(),
+                         h4("Travel Cost for Every Month"),
+                         tableOutput("travel_table")
 
                          ))
                        ),
@@ -259,7 +281,9 @@ server <- function(input, output) {
     pred_table <- as.data.frame(park_hw_forecast) %>% 
       clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
       select(point_forecast) %>% 
-      plyr::rename(c('point_forecast' = 'Mean Forecasted Value'))
+      plyr::rename(c('point_forecast' = 'Mean Forecasted Value')) %>% 
+      setDT(keep.rownames = "Month_Yr") %>% 
+      separate(col = Month_Yr, into = c('Month', 'Year'), sep = " ")
     
     return(pred_table)
   })
@@ -280,39 +304,73 @@ server <- function(input, output) {
      predict_table()
      
    },
-   include.rownames = T)
+   include.rownames = F)
    
    
    
-##THIRD OUTPUTS: Travel Cost Information   
+## THIRD OUTPUTS: Travel Cost Information   
   
   ## REACTIVE OUTPUT 1: VALUE from inputs
-  travel_value <- reactive({
+  ### using mutate to calculate travel cost per row (on a monthly basis) based on inputs
+   
+  travel_one_month <- reactive({
     
     travel_filter <- np_travel_costs %>% 
       filter(ParkName == input$travel_park) %>% 
       filter(Month == input$travel_month) %>% 
-      mutate(Travel_Cost = Entrance_Fee + 
-               if_else(input$travel_transpo == 1, Car_Trip, Fly_Trip) +
-               ifelse(input$travel_stay == 1, Camp_Day, Hotel_Day) +
-               Addnl_Boat_Fee)
+      mutate(Travel_Cost = Entrance_Fee + # park entrance fee +
+               if_else(input$travel_transpo == 1, 2*Car_Trip, 2*Fly_Trip) + #IF travelling by car, then return 2 times Car_Trip value, otherwise return 2 times Fly_Trip value
+               if_else(input$travel_transpo == 1, 0, 2*Addnl_Fly_Fee) + #IF travelling by car, do NOT return additional mileage to get from airport to park, otherwise return 2 times that value
+               if_else(input$travel_stay == 1, Camp_Day, Hotel_Day) + #IF staying at a campsite, return that value, otherwise return the hotel/lodge value
+               Addnl_Boat_Fee) #BOAT FEE is 0 for all parks other than Channel Islands.
+    
+    travel_cost <- as.data.frame(travel_filter) %>% 
+      select(Travel_Cost)
 
-    return(travel_filter)
+    return(travel_cost)
 
   })
     
-    ######NEED TO WORK ON TRAVEL COST FORMULA
    
     ####output: Travel Cost Value from outputs
   
   output$travel_value <- renderPrint({
-    travel_value()
+    travel_one_month()
   })
   
-  ## TWO: TABLE with all monthly predictions
-   
+  ## REACTIVE TWO: Using Previous Forecasted Value for Month Selected
   
-  ## THREE: GRAPH with cost over the year??
+  output$travel_predict <- renderPrint({
+    predict_table()
+  })
+  
+  
+  ## REACTIVE THREE: TABLE with all monthly predictions
+  travel_compare <- reactive({
+    
+    # same as above, except no filtering by month. see above for explanations
+    travel_filter2 <- np_travel_costs %>% 
+      filter(ParkName == input$travel_park) %>% 
+      mutate(Travel_Cost = Entrance_Fee + 
+               if_else(input$travel_transpo == 1, 2*Car_Trip, 2*Fly_Trip) +
+               if_else(input$travel_transpo == 1, 0, 2*Addnl_Fly_Fee) +
+               if_else(input$travel_stay == 1, Camp_Day, Hotel_Day) +
+               Addnl_Boat_Fee)
+    
+    travel_cost2 <- as.data.frame(travel_filter2) %>% 
+      select(Month, Travel_Cost)
+    
+    return(travel_cost2)
+    
+  })
+  
+  ####output: Travel Cost Table for ALL MONTHS from outputs
+  
+  output$travel_table <- renderTable({
+    travel_compare()
+  })
+  
+
     
    
 }
