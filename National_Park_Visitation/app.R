@@ -157,7 +157,7 @@ ui <- fluidPage(
                          textOutput("travel_value"),
                          tags$hr(),
                          h4("Predicted # of Visitors (2019)"),
-                         textOutput("travel_predict"),
+                         tableOutput("travel_predict"),
                          tags$hr(),
                          h4("Travel Cost for Every Month"),
                          tableOutput("travel_table")
@@ -255,7 +255,7 @@ server <- function(input, output) {
    })
    
   ##REACTIVE OUTPUT 2: For the table 
-  predict_table <- reactive ({
+  predict_forecast <- reactive ({
     
     park_filter <- all_month_visitation %>% 
       filter(ParkName == input$predict_choice) %>% 
@@ -278,12 +278,17 @@ server <- function(input, output) {
     park_hw <- HoltWinters(park_ts)
     park_hw_forecast <- forecast(park_hw, h = 60)
     
-    pred_table <- as.data.frame(park_hw_forecast) %>% 
+    return(park_hw_forecast)
+  })
+  
+  predict_table <- reactive({
+    pred_table <- as.data.frame(predict_forecast()) %>% 
       clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
       select(point_forecast) %>% 
       plyr::rename(c('point_forecast' = 'Mean Forecasted Value')) %>% 
       setDT(keep.rownames = "Month_Yr") %>% 
-      separate(col = Month_Yr, into = c('Month', 'Year'), sep = " ")
+      separate(col = Month_Yr, into = c('Month', 'Year'), sep = " ") %>% 
+      filter(Year == input$predict_year_slider)
     
     return(pred_table)
   })
@@ -340,8 +345,47 @@ server <- function(input, output) {
   
   ## REACTIVE TWO: Using Previous Forecasted Value for Month Selected
   
-  output$travel_predict <- renderPrint({
-    predict_table()
+  travel_predict <- reactive({
+    
+    park_filter <- all_month_visitation %>% 
+      filter(ParkName == input$travel_park) %>% 
+      select(-ParkName)
+    
+    gather_up <- gather(park_filter, key = "Month", value = "VisitorCount", JAN:DEC)
+    gather_up$Month <- as.factor(gather_up$Month)
+    
+    months <- factor(levels = c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"))
+    gather_up$Month <- fct_relevel(gather_up$Month, months)
+    
+    gather_park <- gather_up[order(gather_up$Year),]
+    gather_park <- unite(gather_park,
+                         Year_Month, 
+                         c(Year, Month), 
+                         remove = T)
+    
+    park_ts <- ts(gather_park$VisitorCount, frequency = 12, start = c(1979,1))
+    
+    park_hw <- HoltWinters(park_ts)
+    park_hw_forecast <- forecast(park_hw, h = 60)
+    
+    return(park_hw_forecast)
+  })
+  
+  travel_table <- reactive({
+    trav_table <- as.data.frame(travel_predict()) %>% 
+      clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
+      select(point_forecast) %>% 
+      plyr::rename(c('point_forecast' = 'Mean Forecasted Value')) %>% 
+      setDT(keep.rownames = "Month_Yr") %>% 
+      separate(col = Month_Yr, into = c('Month', 'Year'), sep = " ") %>% 
+      filter(Month == input$travel_month)
+    
+    return(trav_table)
+  })
+  
+  
+  output$travel_predict <- renderTable({
+    travel_table()
   })
   
   
