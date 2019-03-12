@@ -40,8 +40,7 @@ ui <- fluidPage(
               
   # TAB 1: Summary of the App
               tabPanel("Summary",
-                       h2(""),
-                       p("Thanks for checking out my shiny app! I have collected data for recreation visits to ten United States National Parks:"),
+                       p("Thanks for checking out my shiny app! This app evaluates visistor attendance to predict future visitor counts for ten United States National Parks. Additionally, this app calculates the estimated travel cost to a Park from southern California (Santa Barbara/Los Angeles). The following Parks are used in this app:"),
                        p(tags$ul(
                          tags$li("Arches"),
                          tags$li("Badlands"),
@@ -59,7 +58,7 @@ ui <- fluidPage(
                        h3("What will visitation be in the near future?"),
                        p("Under the", tags$b("Predicted Trends"), "tab, you can view a forecasted model of selected park attendance from 2019 to 2023. Each forecast is calculated using the Holt-Winters method of smoothing to take into account the seasonality of National Park visitation. A table is also presented for the selected National Park, which shows the average predicted attendance value for each month from 2019-2023."),
                        h3("How much does it cost to visit?"),
-                       p("Under the", tags$b("Travel Costs"), "tab, you can view the cost of travelling and staying at a selected National Park. The following parameters are used to calculate travel cost:"),
+                       p("Under the", tags$b("Travel Costs"), "tab, you can view the cost of travelling and staying at a selected National Park. The travel cost will depend on your choices of travel month, housing, and transportation. The following parameters are used to calculate travel cost:"),
                        p(tags$ul(
                          tags$li(tags$em("Entrance Fee:"), "Price for National Park entrance (if applicable)"),
                          tags$li(tags$em("Campsite Rental:"), "Average price to rent a campsite at the Park"),
@@ -70,7 +69,7 @@ ui <- fluidPage(
                        )),
                        tags$br(),
                        tags$br(),
-                       p("See the" , tags$b("Metadata"), "tab for more information on data sources and travel cost parameter calculations.")
+                       p("See the" , tags$b("Metadata"), "tab for more information on data sources.")
                        ),
      
   
@@ -156,7 +155,9 @@ ui <- fluidPage(
                          
                        
                        mainPanel(
-                         h5("If an NA value is returned, you will have to select a different housing option -- some National Parks do not have campsites available in winter months."),
+                         h5("Select a National Park and month to travel using the dropdown boxes to the left. You can also choose your preferred housing and method of travel using the buttons."), 
+                         h5("Travel cost of your options will be updated with your choices. As a point of comparison, the predicted visitation values for the month at your chosen Park will also show up in the 'Predicted # of Visitors' table."),
+                         p(tags$i("If an NA value is returned, you will have to select a different housing option -- some National Parks do not have campsites available in winter months.")),
                          tags$br(),
                          h4("Travel Cost ($)"),
                          tableOutput("travel_value"),
@@ -173,9 +174,28 @@ ui <- fluidPage(
   
   
   
-  # TAB 5: Metadata info and Calculations
+  # TAB 5: Metadata
               tabPanel("Metadata",
-                       h3("Data Sources")
+                       h4("Author: Meghan Bowen"),
+                       p("More information on forecasting and travel cost calculations available in my app repository on github:", tags$a(href = "https://github.com/megebowen/BowenShinyApp", "https://github.com/megebowen/BowenShinyApp")),
+                       tags$br(),
+                       tags$br(),
+                       h4("Data Sources"),
+                       h5(tags$i("Visitation Data")),
+                       p("National Park Visitation Statistics:", tags$a(href = "https://irma.nps.gov/Stats/", "https://irma.nps.gov/Stats")),
+                       tags$br(),
+                       h5(tags$i("Travel Cost Data")),
+                       p("Entrance Fees:", tags$a(href = "https://www.nps.gov/aboutus/entrance-fee-prices.htm", "https://www.nps.gov/aboutus/entrance-fee-prices.htm")),
+                       p("Campsite Data:", tags$a(href = "https://www.nps.gov/subjects/camping/campground.htm", "https://www.nps.gov/subjects/camping/campground.htm")),
+                       p("Lodging/Hotel Data:", tags$a(href = "https://www.nationalparkreservations.com/", "https://www.nationalparkreservations.com/")),
+                       p("Gas Price & Mileage Data:", tags$br(), 
+                         tags$a(href = "https://gasprices.aaa.com/state-gas-price-averages", "AAA Average US Gas Prices"), 
+                         tags$br(), tags$a(href = "https://www.bts.gov/content/average-fuel-efficiency-us-light-duty-vehicles", "Average Fuel Efficiency of US Fleet"), 
+                         tags$br(), tags$a(href = "maps.google.com", "Google Maps Distances")),
+                       p("Plane Travel Data:", tags$a(href = "https://www.google.com/flights", "https://www.google.com/flights")),
+                       p("Additional Fee Data:",
+                         tags$br(),
+                         tags$a(href =  "http://islandpackers.com/","Channel Islands Boat Trip Data"))
                        )
                        
               
@@ -415,18 +435,18 @@ server <- function(input, output) {
   ## REACTIVE THREE: TABLE with all monthly predictions
   
   travel_compare <- reactive({
-   
+
     # same as above, except no filtering by PARK. see above for explanations
     travel_filter2 <- np_travel_costs %>% 
-      filter(ParkName == input$travel_month) %>% 
       mutate(Travel_Cost = Entrance_Fee + 
                if_else(input$travel_transpo == 1, 2*Car_Trip, 2*Fly_Trip) +
                if_else(input$travel_transpo == 1, 0, 2*Addnl_Fly_Fee) +
                if_else(input$travel_stay == 1, Camp_Day, Hotel_Day) +
-               Addnl_Boat_Fee)
+               Addnl_Boat_Fee) %>% 
+      filter(Month == input$travel_month)
     
     travel_cost2 <- as.data.frame(travel_filter2) %>% 
-      select(Month, Travel_Cost)
+      select(Travel_Cost)
     
     return(travel_cost2)
   
