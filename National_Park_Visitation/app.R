@@ -87,11 +87,12 @@ ui <- fluidPage(
                                        )),
                          
                          mainPanel(
-                           h3(textOutput("caption")),
+                           h3("caption"),
                            plotOutput(outputId = "year_plot",
                                       height = "450px",
-                                      hover = "plot_hover"),
-                           verbatimTextOutput("yr_hover")
+                                      brush = brushOpts(id = "plot_brush")),
+                           h3("Brush Output"),
+                           tableOutput("yr_brush")
       
                        ))),
   
@@ -208,17 +209,25 @@ server <- function(input, output) {
      
    })
    
-   ## Hover Function to show Year & Visitor Values
-   output$yr_hover <- renderPrint({
-     
-     hover_fxn <- function(e) {
-       if(is.null(e)) return ("NA")
+   ## Brush Function to show Year & Visitor Values
+   
+  brush_df <- reactive({
+    #for some reason, the outputs are showing decimal points, so for easier display changed Year & Visitors to integers
+    all_year_visitation$Year <- as.integer(all_year_visitation$Year)
+    all_year_visitation$RecreationVisitors <- as.integer(all_year_visitation$RecreationVisitors)
     
-      paste("Year", return(e$x),
-            "Visitors", return(e$y))  
-     }
+    brush_data <- all_year_visitation %>%
+      filter(ParkName == input$year_graph_choice) %>% 
+      select(-ParkName) %>% 
+      plyr::rename(c('RecreationVisitors' = '# of Visitors'))
+    
+  }) 
+   
+ 
+   
+   output$yr_brush <- renderTable({
      
-     paste(hover_fxn(input$plot_hover))
+     brushedPoints(brush_df(), input$plot_brush) 
    
     })
 
@@ -254,8 +263,18 @@ server <- function(input, output) {
      return(park_hw_forecast)
    })
    
+   
+   ##Holt-Winters Predictions Plot
+   output$predict_plot <- renderPlot({
+     
+     plot(park_predictions(),
+          main = paste("Historic and Predicted Visitation to", input$predict_choice, "\n (By Month)"),
+          xlab= "Year",
+          ylab = "# of Visitors")
+   })
+   
   ##REACTIVE OUTPUT 2: For the table 
-  predict_forecast <- reactive ({
+  predict_forecast <- reactive({
     
     park_filter <- all_month_visitation %>% 
       filter(ParkName == input$predict_choice) %>% 
@@ -294,15 +313,6 @@ server <- function(input, output) {
   })
   
   
-  
-  ##Holt-Winters Predictions Plot
-   output$predict_plot <- renderPlot({
-     
-     plot(park_predictions(),
-          main = paste("Historic and Predicted Visitation to", input$predict_choice, "\n (By Month)"),
-          xlab= "Year",
-          ylab = "# of Visitors")
-   })
    
   ##Holt-Winters Predictions Table 
    output$HWTable <- renderTable({
@@ -336,16 +346,17 @@ server <- function(input, output) {
 
   })
     
-   
     ####output: Travel Cost Value from outputs
   
   output$travel_value <- renderPrint({
     travel_one_month()
   })
   
+  
+  
   ## REACTIVE TWO: Using Previous Forecasted Value for Month Selected
   
-  travel_predict <- reactive({
+  travel_pred <- reactive({
     
     park_filter <- all_month_visitation %>% 
       filter(ParkName == input$travel_park) %>% 
@@ -372,7 +383,7 @@ server <- function(input, output) {
   })
   
   travel_table <- reactive({
-    trav_table <- as.data.frame(travel_predict()) %>% 
+    trav_table <- as.data.frame(travel_pred()) %>% 
       clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
       select(point_forecast) %>% 
       plyr::rename(c('point_forecast' = 'Mean Forecasted Value')) %>% 
@@ -390,8 +401,14 @@ server <- function(input, output) {
   
   
   ## REACTIVE THREE: TABLE with all monthly predictions
+  
+    #Part 1. Store needed inputs as reactive values
+  
+  
   travel_compare <- reactive({
     
+    get(isolate(local(input$travel_month)))  # No dependency on input$dataset
+   
     # same as above, except no filtering by month. see above for explanations
     travel_filter2 <- np_travel_costs %>% 
       filter(ParkName == input$travel_park) %>% 
@@ -405,7 +422,7 @@ server <- function(input, output) {
       select(Month, Travel_Cost)
     
     return(travel_cost2)
-    
+  
   })
   
   ####output: Travel Cost Table for ALL MONTHS from outputs

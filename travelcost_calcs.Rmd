@@ -31,8 +31,7 @@ np_travel_costs$Month <- fct_relevel(np_travel_costs$Month, months)
 
 # filter by Park & Month
 choose_park_mo <- np_travel_costs %>% 
-  filter(ParkName == "Arches") %>% 
-  filter(Month == "Mar") 
+  filter(ParkName == "Arches")
 
 # filter by house & Transportation Selections
 choose <- choose_park_mo %>% 
@@ -52,8 +51,7 @@ print(TravelCost_Arches)
 
 ## Step 1: filter by Park & Month
 choose_park_mo <- np_travel_costs %>% 
-  filter(ParkName == "Channel Islands") %>% 
-  filter(Month == "Jul")
+  filter(ParkName == "Channel Islands") 
 
 ## Step 2: select transportation. In this case, a choice of flight will return NA
 choose_transpo <- choose_park_mo %>% 
