@@ -171,10 +171,7 @@ ui <- fluidPage(
                          tableOutput("travel_value"),
                          tags$hr(),
                          h4("Predicted # of Visitors"),
-                         tableOutput("travel_predict"),
-                         tags$hr(),
-                         h4("Travel Cost for Every Month"),
-                         tableOutput("travel_table")
+                         tableOutput("travel_predict")
 
                          ))
                        ),
@@ -366,15 +363,15 @@ server <- function(input, output) {
    
   travel_one_month <- reactive({
     
+    
     travel_filter <- np_travel_costs %>% 
       filter(ParkName == input$travel_park) %>% 
       filter(Month == input$travel_month) %>% 
-      mutate(Travel_Cost = input$travel_days * 
-               (Entrance_Fee + # park entrance fee +
-               if_else(input$travel_transpo == 1, Car_Trip, Fly_Trip) + #IF travelling by car, then return 2 times Car_Trip value, otherwise return 2 times Fly_Trip value
-               if_else(input$travel_transpo == 1, 0, Addnl_Fly_Fee) + #IF travelling by car, do NOT return additional mileage to get from airport to park, otherwise return 2 times that value
-               if_else(input$travel_stay == 1, Camp_Day, Hotel_Day) + #IF staying at a campsite, return that value, otherwise return the hotel/lodge value
-               Addnl_Boat_Fee)) #BOAT FEE is 0 for all parks other than Channel Islands.
+      mutate(Travel_Cost = Entrance_Fee + # park entrance fee 
+               if_else(input$travel_transpo == 1, Car_Trip, Fly_Trip) + #IF travelling by car, then return Car_Trip value, otherwise return Fly_Trip value
+               if_else(input$travel_transpo == 1, 0, Addnl_Fly_Fee) + #IF travelling by car, do NOT return additional mileage to get from airport to park, otherwise return Addnl_Fly_Fee
+               ifelse(input$travel_stay == 1, Camp_Day, input$travel_days*Hotel_Day) + #IF staying at a campsite, return that value, otherwise return the expression: # of days staying (input) TIMES hotel/lodge value
+               Addnl_Boat_Fee) #BOAT FEE is 0 for all parks other than Channel Islands.
     
     travel_cost <- as.data.frame(travel_filter) %>% 
       select(Travel_Cost)
@@ -440,39 +437,6 @@ server <- function(input, output) {
     travel_table()
   })
   
-  
-  ## REACTIVE THREE: TABLE with all monthly predictions
-  
-#  observe({
-#    input$travel_month
-#    input$travel_stay
-#    input$travel_transpo
-    
-#    get(isolate(input$travel_park))
-#  })
-  
-  travel_compare <- reactive({
-    
-    # same as above, except no filtering by PARK. see above for explanations
-    travel_filter2 <- np_travel_costs %>% 
-      mutate(Travel_Cost = Entrance_Fee + 
-               if_else(input$travel_transpo == 1, Car_Trip, Fly_Trip) +
-               if_else(input$travel_transpo == 1, 0, Addnl_Fly_Fee) +
-               if_else(input$travel_stay == 1, Camp_Day, Hotel_Day) +
-               Addnl_Boat_Fee) %>% 
-      filter(Month == input$travel_month) %>% 
-      select(ParkName, Month, Travel_Cost)
-    
-    return(travel_filter2)
-  
-  })
-  
-  ####output: Travel Cost Table for ALL MONTHS from outputs
-  
-  output$travel_table <- renderTable({
-    
-    travel_compare()
-  })
   
 
     
