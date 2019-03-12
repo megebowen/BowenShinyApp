@@ -142,6 +142,14 @@ ui <- fluidPage(
                            
                            tags$hr(),
                            
+                           sliderInput("travel_days",
+                                       label = h4("How long to Stay?"),
+                                       min = 1,
+                                       max = 21,
+                                       value = 1),
+                           
+                           tags$hr(),
+                           
                            radioButtons("travel_stay",
                                         label = h4("Where to Stay?"),
                                         choices = c("Campsite" = 1, "Hotel/Lodge" = 2)), 
@@ -155,7 +163,7 @@ ui <- fluidPage(
                          
                        
                        mainPanel(
-                         h5("Select a National Park and month to travel using the dropdown boxes to the left. You can also choose your preferred housing and method of travel using the buttons."), 
+                         h5("Select a National Park and month of travel using the dropdown boxes to the left -- you can also calculate the travel cost of a multi-day stay (up to 3 weeks) using the slider. Choose your preferred housing and method of travel using the buttons."), 
                          h5("Travel cost of your options will be updated with your choices. As a point of comparison, the predicted visitation values for the month at your chosen Park will also show up in the 'Predicted # of Visitors' table."),
                          p(tags$i("If an NA value is returned, you will have to select a different housing option -- some National Parks do not have campsites available in winter months.")),
                          tags$br(),
@@ -361,11 +369,12 @@ server <- function(input, output) {
     travel_filter <- np_travel_costs %>% 
       filter(ParkName == input$travel_park) %>% 
       filter(Month == input$travel_month) %>% 
-      mutate(Travel_Cost = Entrance_Fee + # park entrance fee +
-               if_else(input$travel_transpo == 1, 2*Car_Trip, 2*Fly_Trip) + #IF travelling by car, then return 2 times Car_Trip value, otherwise return 2 times Fly_Trip value
-               if_else(input$travel_transpo == 1, 0, 2*Addnl_Fly_Fee) + #IF travelling by car, do NOT return additional mileage to get from airport to park, otherwise return 2 times that value
+      mutate(Travel_Cost = input$travel_days * 
+               (Entrance_Fee + # park entrance fee +
+               if_else(input$travel_transpo == 1, Car_Trip, Fly_Trip) + #IF travelling by car, then return 2 times Car_Trip value, otherwise return 2 times Fly_Trip value
+               if_else(input$travel_transpo == 1, 0, Addnl_Fly_Fee) + #IF travelling by car, do NOT return additional mileage to get from airport to park, otherwise return 2 times that value
                if_else(input$travel_stay == 1, Camp_Day, Hotel_Day) + #IF staying at a campsite, return that value, otherwise return the hotel/lodge value
-               Addnl_Boat_Fee) #BOAT FEE is 0 for all parks other than Channel Islands.
+               Addnl_Boat_Fee)) #BOAT FEE is 0 for all parks other than Channel Islands.
     
     travel_cost <- as.data.frame(travel_filter) %>% 
       select(Travel_Cost)
@@ -434,28 +443,33 @@ server <- function(input, output) {
   
   ## REACTIVE THREE: TABLE with all monthly predictions
   
+#  observe({
+#    input$travel_month
+#    input$travel_stay
+#    input$travel_transpo
+    
+#    get(isolate(input$travel_park))
+#  })
+  
   travel_compare <- reactive({
-
+    
     # same as above, except no filtering by PARK. see above for explanations
     travel_filter2 <- np_travel_costs %>% 
       mutate(Travel_Cost = Entrance_Fee + 
-               if_else(input$travel_transpo == 1, 2*Car_Trip, 2*Fly_Trip) +
-               if_else(input$travel_transpo == 1, 0, 2*Addnl_Fly_Fee) +
+               if_else(input$travel_transpo == 1, Car_Trip, Fly_Trip) +
+               if_else(input$travel_transpo == 1, 0, Addnl_Fly_Fee) +
                if_else(input$travel_stay == 1, Camp_Day, Hotel_Day) +
                Addnl_Boat_Fee) %>% 
-      filter(Month == input$travel_month)
+      filter(Month == input$travel_month) %>% 
+      select(ParkName, Month, Travel_Cost)
     
-    travel_cost2 <- as.data.frame(travel_filter2) %>% 
-      select(Travel_Cost)
-    
-    return(travel_cost2)
+    return(travel_filter2)
   
   })
   
   ####output: Travel Cost Table for ALL MONTHS from outputs
   
   output$travel_table <- renderTable({
-    req(input$travel_park, input$travel_transpo, input$travel_stay)
     
     travel_compare()
   })

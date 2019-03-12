@@ -16,7 +16,7 @@ library(knitr)
 
 
 ## 1. Park Entrance Fee (per trip): 
-[linked phrase] (https://www.nps.gov/aboutus/entrance-fee-prices.htm)
+(https://www.nps.gov/aboutus/entrance-fee-prices.htm)
 
 - used the per vehicle price -- fees listed "current" or (if applicable) after January 1, 2019
 
@@ -27,7 +27,9 @@ library(knitr)
 ## 2. Campground Fee (per day): 
 (https://www.nps.gov/subjects/camping/campground.htm)
 
-- used the individual campground fee
+- price is reflected in the "individual campground" fee category listed for each park
+
+###Campsites used for fees:
 - Arches: used Devils Garden Campground
 - Badlands: used Cedar Pass Campground
 - Channel Islands: used $15 base rate quoted on their website
@@ -140,7 +142,7 @@ https://www.nationalparkreservations.com
 - price does NOT include taxes or other room fees
 - NOT including any seasonality in pricing, too much detail and I don't want to collect that fine scale of information
 
-###1. Arches:
+### 1. Arches:
 - Aarchway Inn ($80/night)
 - Best Western Greenwell ($87/night)
 - Best Western Canyonlands ($94/night)
@@ -430,4 +432,4 @@ $$ PlaneCost = p(TicketPrice) + (CarPrice) $$
 
 where x is the number of days staying at the NP, 
 
-$$TRAVEL COST = (Park Entrance) + [CampFee*x]||[HotelPrice*x] + [CarRound]||[PlaneRound] + AddnlFee$$
+$$TRAVEL COST = (Park Entrance) + [CampFee*x]||[HotelPrice*x] + 2*[CarRound]||2*[PlaneRound] + AddnlFee$$

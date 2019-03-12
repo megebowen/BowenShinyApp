@@ -13,5 +13,4 @@ isolate(get(input$travel_month))
 
 ## METADATA
 
-### NEED TO ADD SOURCES
 ### NEED TO ADD TRAVEL CALC EXPLANATIONS
