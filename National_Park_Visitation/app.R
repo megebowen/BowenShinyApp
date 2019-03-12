@@ -91,6 +91,7 @@ ui <- fluidPage(
                            plotOutput(outputId = "year_plot",
                                       height = "450px",
                                       brush = brushOpts(id = "plot_brush")),
+                           tags$br(),
                            h4("Click & Drag Output"),
                            tableOutput("yr_brush")
       
@@ -108,14 +109,15 @@ ui <- fluidPage(
                                            label = h4("Choose a National Park:"), 
                                            choices = c("Arches", "Badlands", "Channel Islands", "Glacier", "Grand Teton", "Redwood", "Shenandoah", "Yellowstone", "Yosemite", "Zion") 
                                            ),
-                               sliderInput("predict_year_slider",
-                                           label = h4("Prediction Year(s):"),
-                                           min = 2019,
-                                           max = 2023,
-                                           value = c(2019, 2020, 2021, 2022, 2023))),
+                               checkboxGroupInput("predict_check",
+                                                  label = h4("Choose a Year:"),
+                                                  choices = c(2019, 2020, 2021, 2022, 2023),
+                                                  selected = 2019)),
                      
             
                        mainPanel(
+                         h5("Select a National Park from the dropdown box to the left to see a graph with forecasted values for future monthly visitors, up to 5 years in the future (2019-2023). The shaded gray areas on the plot represent the range of possible values (lowest bound prediction to highest bound prediction). The blue line represents the average forecasted value."),
+                         h5("The table below the graph shows the average predicted value for every month for your selected Park. You can choose a range of years with predictions using the CHECK BOX to the left."),
                          plotOutput(outputId = "predict_plot",
                                     height = "450px"),
                          tags$br(),
@@ -191,7 +193,7 @@ server <- function(input, output) {
 
 ## FIRST OUTPUTS: TAB 2 (Yearly Visitation)
   
-  ## Plot of Year vs. # of Millions Visitors
+  ## Output 1: Plot of Year vs. # of Millions Visitors
    output$year_plot <- renderPlot({
      
      ggplot(filter(all_year_visitation,
@@ -209,7 +211,7 @@ server <- function(input, output) {
      
    })
    
-   ## Brush Function to show Year & Visitor Values
+   ## Output 2: Brush Function to show Year & Visitor Values
    
   brush_df <- reactive({
     #for some reason, the outputs are showing decimal points, so for easier display changed Year & Visitors to integers
@@ -223,7 +225,7 @@ server <- function(input, output) {
     
   }) 
    
- 
+ ####output: table with brushed values
    
    output$yr_brush <- renderTable({
      
@@ -268,7 +270,7 @@ server <- function(input, output) {
    output$predict_plot <- renderPlot({
      
      plot(park_predictions(),
-          main = paste("Historic and Predicted Visitation to", input$predict_choice, "\n (By Month)"),
+          main = paste("Historic and Predicted Monthly Visitation to", input$predict_choice),
           xlab= "Year",
           ylab = "# of Visitors")
    })
@@ -305,15 +307,14 @@ server <- function(input, output) {
     pred_table <- as.data.frame(predict_forecast()) %>% 
       clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
       select(point_forecast) %>% 
-      plyr::rename(c('point_forecast' = 'Mean Forecasted Value')) %>% 
+      plyr::rename(c('point_forecast' = 'Mean Forecasted Visitors')) %>% 
       setDT(keep.rownames = "Month_Yr") %>% 
       separate(col = Month_Yr, into = c('Month', 'Year'), sep = " ") %>% 
-      filter(Year == input$predict_year_slider)
+      filter(Year %in% input$predict_check)
     
-    pred_table$`Mean Forecasted Value` <- as.integer(pred_table$`Mean Forecasted Value`)
+    pred_table$`Mean Forecasted Visitors` <- as.integer(pred_table$`Mean Forecasted Visitors`)
     return(pred_table)
   })
-  
   
    
   ##Holt-Winters Predictions Table 
@@ -322,6 +323,9 @@ server <- function(input, output) {
      
    },
    include.rownames = F)
+   
+   
+   
    
    
    
@@ -409,7 +413,7 @@ server <- function(input, output) {
   
   travel_compare <- reactive({
     
-    get(isolate(local(input$travel_month)))  # No dependency on input$dataset
+    get(isolate(input$travel_month))  # No dependency on input$dataset
    
     # same as above, except no filtering by month. see above for explanations
     travel_filter2 <- np_travel_costs %>% 
