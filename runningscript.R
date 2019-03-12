@@ -4,13 +4,11 @@
 ###SUMMARY
 ##
 
-## OUTPUT 2
-### fix checkbox to display all months and all years checked
 
 
 ## OUTPUT 3
-### fix value output
-### need to get table working
+isolate(get(input$travel_month))  
+### produce table with all travel costs for EVERY PARK FOR A SELECTED MONTH??
 
 
 ## METADATA

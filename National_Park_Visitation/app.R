@@ -117,7 +117,7 @@ ui <- fluidPage(
             
                        mainPanel(
                          h5("Select a National Park from the dropdown box to the left to see a graph with forecasted values for future monthly visitors, up to 5 years in the future (2019-2023). The shaded gray areas on the plot represent the range of possible values (lowest bound prediction to highest bound prediction). The blue line represents the average forecasted value."),
-                         h5("The table below the graph shows the average predicted value for every month for your selected Park. You can choose a range of years with predictions using the CHECK BOX to the left."),
+                         h5("The table below the graph shows the average predicted value for every month for your selected Park. You can choose a range of years with predictions using the checkbox."),
                          plotOutput(outputId = "predict_plot",
                                     height = "450px"),
                          tags$br(),
@@ -156,10 +156,12 @@ ui <- fluidPage(
                          
                        
                        mainPanel(
-                         h4(paste("Travel Cost from Santa Barbara to", "in")),
-                         textOutput("travel_value"),
+                         h5("If an NA value is returned, you will have to select a different housing option -- some National Parks do not have campsites available in winter months."),
+                         tags$br(),
+                         h4("Travel Cost ($)"),
+                         tableOutput("travel_value"),
                          tags$hr(),
-                         h4("Predicted # of Visitors (2019)"),
+                         h4("Predicted # of Visitors"),
                          tableOutput("travel_predict"),
                          tags$hr(),
                          h4("Travel Cost for Every Month"),
@@ -354,9 +356,10 @@ server <- function(input, output) {
     
     ####output: Travel Cost Value from outputs
   
-  output$travel_value <- renderPrint({
+  output$travel_value <- renderTable({
     travel_one_month()
-  })
+  },
+  include.colnames = F)
   
   
   
@@ -389,13 +392,16 @@ server <- function(input, output) {
   })
   
   travel_table <- reactive({
+    
     trav_table <- as.data.frame(travel_pred()) %>% 
       clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
       select(point_forecast) %>% 
-      plyr::rename(c('point_forecast' = 'Mean Forecasted Value')) %>% 
+      plyr::rename(c('point_forecast' = 'Mean Forecasted Visitors')) %>% 
       setDT(keep.rownames = "Month_Yr") %>% 
       separate(col = Month_Yr, into = c('Month', 'Year'), sep = " ") %>% 
       filter(Month == input$travel_month)
+    
+    trav_table$`Mean Forecasted Visitors` <- as.integer(trav_table$`Mean Forecasted Visitors`)
     
     return(trav_table)
   })
@@ -408,16 +414,11 @@ server <- function(input, output) {
   
   ## REACTIVE THREE: TABLE with all monthly predictions
   
-    #Part 1. Store needed inputs as reactive values
-  
-  
   travel_compare <- reactive({
-    
-    get(isolate(input$travel_month))  # No dependency on input$dataset
    
-    # same as above, except no filtering by month. see above for explanations
+    # same as above, except no filtering by PARK. see above for explanations
     travel_filter2 <- np_travel_costs %>% 
-      filter(ParkName == input$travel_park) %>% 
+      filter(ParkName == input$travel_month) %>% 
       mutate(Travel_Cost = Entrance_Fee + 
                if_else(input$travel_transpo == 1, 2*Car_Trip, 2*Fly_Trip) +
                if_else(input$travel_transpo == 1, 0, 2*Addnl_Fly_Fee) +
@@ -434,6 +435,8 @@ server <- function(input, output) {
   ####output: Travel Cost Table for ALL MONTHS from outputs
   
   output$travel_table <- renderTable({
+    req(input$travel_park, input$travel_transpo, input$travel_stay)
+    
     travel_compare()
   })
   
