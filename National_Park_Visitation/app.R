@@ -87,11 +87,11 @@ ui <- fluidPage(
                                        )),
                          
                          mainPanel(
-                           h3("caption"),
+                           h5("Select a National Park from the dropdown box to the left. You can also click and drag over point(s) on the graph to see the actual visitor counts to the selected Park."),
                            plotOutput(outputId = "year_plot",
                                       height = "450px",
                                       brush = brushOpts(id = "plot_brush")),
-                           h3("Brush Output"),
+                           h4("Click & Drag Output"),
                            tableOutput("yr_brush")
       
                        ))),
@@ -301,6 +301,7 @@ server <- function(input, output) {
   })
   
   predict_table <- reactive({
+    
     pred_table <- as.data.frame(predict_forecast()) %>% 
       clean_names() %>% #from the janitor package, to make the names in snake_case for future renaming
       select(point_forecast) %>% 
@@ -309,6 +310,7 @@ server <- function(input, output) {
       separate(col = Month_Yr, into = c('Month', 'Year'), sep = " ") %>% 
       filter(Year == input$predict_year_slider)
     
+    pred_table$`Mean Forecasted Value` <- as.integer(pred_table$`Mean Forecasted Value`)
     return(pred_table)
   })
   
