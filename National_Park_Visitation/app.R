@@ -86,13 +86,16 @@ ui <- fluidPage(
                                        )),
                          
                          mainPanel(
-                           h5("Select a National Park from the dropdown box to the left. You can also click and drag over point(s) on the graph to see the actual visitor counts to the selected Park."),
-                           plotOutput(outputId = "year_plot",
-                                      height = "450px",
-                                      brush = brushOpts(id = "plot_brush")),
-                           tags$br(),
-                           h4("Click & Drag Output"),
-                           tableOutput("yr_brush")
+                           h5("Select a National Park from the dropdown box to the left. The", tags$b("Plot"), "tab will show you a graph of all visitors from the first recorded year to 2018."),
+                           h5("You can also click and drag over point(s) on the graph to see the actual visitor counts to the selected Park. This information can be viewed in the", tags$b("Click & Drag Output"), "tab."),
+                           tabsetPanel(
+                             tabPanel("Plot",
+                                      plotOutput(outputId = "year_plot",
+                                                 height = "450px",
+                                                 brush = brushOpts(id = "plot_brush"))),
+                             tabPanel("Click & Drag Output",
+                                      tableOutput("yr_brush"))
+                           )
       
                        ))),
   
@@ -115,14 +118,16 @@ ui <- fluidPage(
                      
             
                        mainPanel(
-                         h5("Select a National Park from the dropdown box to the left to see a graph with forecasted values for future monthly visitors, up to 5 years in the future (2019-2023). The shaded gray areas on the plot represent the range of possible values (lowest bound prediction to highest bound prediction). The blue line represents the average forecasted value."),
-                         h5("The table below the graph shows the average predicted value for every month for your selected Park. You can choose a range of years with predictions using the checkbox."),
-                         plotOutput(outputId = "predict_plot",
+                         h5("Select a National Park from the dropdown box to the left. The", tags$b("Plot"), "tab will produce a graph with forecasted values for future monthly visitors up to the next five years (2019-2023)."),
+                         h5("Use the checkbox to the left to select a year (or years) to view the average predicted forecast value for every month in the", tags$b("Prediction Table"), "tab."),
+                         tabsetPanel(
+                           tabPanel("Plot",
+                                    plotOutput(outputId = "predict_plot",
                                     height = "450px"),
-                         tags$br(),
-                         h4("Table with Predictions"),
-                         tableOutput("HWTable"))
-                       )),
+                                    h5("The shaded", tags$span(style = "color:lightslategray", "gray areas"), "on the plot represent the range of possible values (lowest bound prediction to highest bound prediction). The" , tags$span(style = "color:blue", "blue line"), "represents the average forecasted value.")),
+                           tabPanel("Prediction Table",
+                                    tableOutput("HWTable"))
+                       )))),
               
               
   # TAB 4: Calculate Travel Cost to a Park using Inputs 
@@ -165,7 +170,7 @@ ui <- fluidPage(
                        mainPanel(
                          h5("Select a National Park and month of travel using the dropdown boxes to the left -- you can also calculate the travel cost of a multi-day stay (up to 3 weeks) using the slider. Choose your preferred housing and method of travel using the buttons."), 
                          h5("Travel cost of your options will be updated with your choices. As a point of comparison, the predicted visitation values for the month at your chosen Park will also show up in the 'Predicted # of Visitors' table."),
-                         p(tags$i("If an NA value is returned, you will have to select a different housing option -- some National Parks do not have campsites available in winter months.")),
+                         p(tags$i("If an NA value is returned, you will have to select a different housing option -- some National Parks vary in their availability of campsites or lodges/hotels.")),
                          tags$br(),
                          h4("Travel Cost ($)"),
                          tableOutput("travel_value"),
