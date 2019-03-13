@@ -32,7 +32,7 @@ np_travel_costs <- as.data.frame(np_travel_costs)
 ui <- fluidPage(
    
    # Application title
-   titlePanel("US National Park Visitation"),
+   titlePanel("US National Parks Exploration"),
    
    navbarPage("",
               theme = shinytheme("simplex"),
@@ -40,7 +40,8 @@ ui <- fluidPage(
               
   # TAB 1: Summary of the App
               tabPanel("Summary",
-                       p("Thanks for checking out my shiny app! This app evaluates visistor attendance to predict future visitor counts for ten United States National Parks. Additionally, this app calculates the estimated travel cost to a Park from southern California (Santa Barbara/Los Angeles). The following Parks are used in this app:"),
+                       p("Thanks for checking out my shiny app! This app evaluates visistor attendance to predict future visitor counts for ten United States National Parks. Additionally, this app calculates the estimated travel cost to a Park from southern California (Santa Barbara/Los Angeles)."), 
+                       p("The following Parks are used in this app:"),
                        p(tags$ul(
                          tags$li("Arches"),
                          tags$li("Badlands"),
@@ -58,19 +59,14 @@ ui <- fluidPage(
                        h3("What will visitation be in the near future?"),
                        p("Under the", tags$b("Predicted Trends"), "tab, you can view a forecasted model of selected park attendance from 2019 to 2023. Each forecast is calculated using the Holt-Winters method of smoothing to take into account the seasonality of National Park visitation. A table is also presented for the selected National Park, which shows the average predicted attendance value for each month from 2019-2023."),
                        h3("How much does it cost to visit?"),
-                       p("Under the", tags$b("Travel Costs"), "tab, you can view the cost of travelling and staying at a selected National Park. The travel cost will depend on your choices of travel month, housing, and transportation. The following parameters are used to calculate travel cost:"),
+                       p("Under the", tags$b("Travel Costs"), "tab, you can view the cost of travelling and staying at a selected National Park. Your choices include: duration, travel month, housing, and transportation. The following parameters are used to calculate travel cost:"),
                        p(tags$ul(
-                         tags$li(tags$em("Entrance Fee:"), "Price for National Park entrance (if applicable)"),
-                         tags$li(tags$em("Campsite Rental:"), "Average price to rent a campsite at the Park"),
-                         tags$li(tags$em("Lodging/Hotel Rate:"), "Average price to rent a room at a lodge or hotel near the Park"),
-                         tags$li(tags$em("Car Mileage:"), "Roundtrip cost to drive from Santa Barbara to the Park (and back)"),
-                         tags$li(tags$em("Plane Trip:"), "Roundtrip cost to fly from LAX to an airport nearest the Park (and back), including additional auto mileage cost"),
-                         tags$li(tags$em("Additional Fee(s):"), "Any additional fees to get to the Park")
-                       )),
+                         tags$li("Month of Travel"), 
+                         tags$li("Length of Stay"), 
+                         tags$li("Housing"), 
+                         tags$li("Transportation"))),
                        tags$br(),
-                       tags$br(),
-                       p("See the" , tags$b("Metadata"), "tab for more information on data sources.")
-                       ),
+                       p("See the", tags$b("Metadata"), "tab for more information on data sources.")),
      
   
   
