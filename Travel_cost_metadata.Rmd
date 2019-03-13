@@ -432,4 +432,4 @@ $$ PlaneCost = p(TicketPrice) + (CarPrice) $$
 
 where x is the number of days staying at the NP, 
 
-$$TRAVEL COST = (Park Entrance) + [CampFee*x]||[HotelPrice*x] + 2*[CarRound]||2*[PlaneRound] + AddnlFee$$
+$$TRAVEL COST = (Park Entrance) + [CampFee*x]||[HotelPrice*x] + [CarRound]||[PlaneRound] + AddnlFee$$
