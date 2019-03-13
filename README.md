@@ -6,18 +6,30 @@ This app has three main goals:
 2. Forecast monthly vistior counts for 2019-2023
 3. Calculate the travel cost to get to the national park from southern California (Santa Barbar/LA)
 
+## National Parks Included in the App:
+- Arches
+- Badlands
+- Channel Islands
+- Glacier
+- Grand Teton
+- Redwood
+- Shenandoah
+- Yellowstone
+- Yosemite
+- Zion
+
 ## Files in this repository:
 
-### all_month_visitation: Monthly visitation data for the ten parks, ~1979-2018
-### all_year_visitation: Yearly visitation data for the ten parks, ~1900-2018
-### Code: contains scripts for the UI and server for this app
-### historic_trends_notes: Working document to explore and plot yearly visitation data
-### National_Park_Visitation: contains the shiny app
-### np_travel_costs: Travel cost data for the ten parks
-### predict_trends_notes: Working document to explore monthly visitation data, forecast monthly visitation to five years (2019-2023), and plot
-### Raw_Visitation_Data: monthly and yearly visitation data obtained from the National Park Service
-### Travel_cost_metadata: Sources and methods for travel cost data calculations
-### travel_cost_notes: Working document to calculate travel cost
+- all_month_visitation: Monthly visitation data used in the app for the ten parks, ~1979-2018
+- all_year_visitation: Yearly visitation data used in the app for the ten parks, ~1900-2018
+- Code: contains scripts for the UI and server for this app
+- historic_trends_notes: Working document to explore and plot yearly visitation data
+- National_Park_Visitation: contains the shiny app
+- np_travel_costs: Travel cost data used in the app for the ten parks
+- predict_trends_notes: Working document to explore monthly visitation data, forecast monthly visitation to five years (2019-2023), and plot
+- Raw_Visitation_Data: monthly and yearly visitation data obtained from the National Park Service
+- Travel_cost_metadata: Sources and methods for travel cost data calculations
+- travel_cost_notes: Working document to calculate travel cost
 
 
 
