@@ -1,5 +1,5 @@
 ---
-title: "arima_notes"
+title: "Working Notes on Forecasting Data"
 author: "Meghan Bowen"
 date: "2/20/2019"
 output: html_document
@@ -19,36 +19,43 @@ library(forecast)
 library(gridExtra)
 ```
 
+## Notes on this RMD:
+
+1. Has code that I used to combine all of the monthly visitation data
+2. Explores Yellowstone monthly data to determine if forecasting is viable for the data (answer is yes)
+3. Tests Holt-Winters smoothing and ARIMA methods to see which is better (I ended up using Holt-Winters since the data is highly seasonal and the inputs are a bit easier for multiple data sets)
+
+
 ```{r clean_month}
 ##Need to clean the monthly data and make into tidy format
-arches_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/arches_vis_month.csv") %>%
+arches_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/arches_vis_month.csv") %>%
   mutate(ParkName = "Arches")
 
-badlands_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/badlands_vis_month.csv") %>%
+badlands_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/badlands_vis_month.csv") %>%
   mutate(ParkName = "Badlands")
 
-channel_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/channel_vis_month.csv") %>%
+channel_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/channel_vis_month.csv") %>%
   mutate(ParkName = "Channel Islands")
 
-glacier_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/glacier_vis_month.csv") %>%
+glacier_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/glacier_vis_month.csv") %>%
   mutate(ParkName = "Glacier")
 
-gteton_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/gteton_vis_month.csv") %>%
+gteton_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/gteton_vis_month.csv") %>%
   mutate(ParkName = "Grand Teton")
 
-redwood_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/redwood_vis_month.csv") %>%
+redwood_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/redwood_vis_month.csv") %>%
   mutate(ParkName = "Redwood")
 
-shenandoah_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/shenandoah_vis_month.csv") %>%
+shenandoah_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/shenandoah_vis_month.csv") %>%
   mutate(ParkName = "Shenandoah")
 
-yellowstone_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yellowstone_vis_month.csv") %>%
+yellowstone_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/yellowstone_vis_month.csv") %>%
   mutate(ParkName = "Yellowstone")
 
-yosemite_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yosemite_vis_month.csv") %>%
+yosemite_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/yosemite_vis_month.csv") %>%
   mutate(ParkName = "Yosemite")
 
-zion_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/zion_vis_month.csv") %>%
+zion_vis_month <- read_csv("~/github/BowenShinyApp/Raw_Visitation_Data/zion_vis_month.csv") %>%
   mutate(ParkName = "Zion")
 
 

@@ -17,6 +17,11 @@ library(janitor)
 
 ```
 
+## Notes on this RMD:
+1. Basic manipulation of travel cost data 
+2. Using Arches as an example, working out formula for travel cost
+3. Testing for outputs for parks with NA values
+
 ```{r load_data}
 
 np_travel_costs <- read_csv("~/github/BowenShinyApp/np_travel_costs.csv")
@@ -65,28 +70,6 @@ print(TravelCost_CI) ## looks like it works so that's nice!
 
 ```
 
-## NEED TO WORK ON ADDNL FLY FEE OUTPUT
 
-```{r graph_output}
-
-# calculate Travel Cost for each month for EACH SELECTION
-
-## Step 1: filter by Park
-choose_park <- np_travel_costs %>% 
-  filter(ParkName == "Arches")
-
-## Step 2: create travel cost column
-choose_park_tc <- choose_park %>% 
-  mutate(TravelCost = Entrance_Fee + Camp_Day + Car_Trip + Addnl_Boat_Fee)
-
-
-
-# plot the travel costs
-ggplot(choose_park_tc,
-       aes(x=Month, y=TravelCost)) +
-  geom_point() +
-  geom_line()
-
-```
 
 

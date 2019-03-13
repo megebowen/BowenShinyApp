@@ -9,8 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Looking at Historic Trends in National Park Attendance
-
 ```{r load_packages}
 
 library(tidyverse)
@@ -18,20 +16,23 @@ library(knitr)
 library(ggfortify) ##for better luck with the monthly data plots, plots ts objects
 
 ```
-## Part 1. Yearly Attendance
+## Notes on this RMD:
+
+1. Combined all yearly visitation data for easier ggplot loading
+2. Used Yellowstone as an example for historic ggplot output in the app
 
 ```{r load_clean_year_data}
 # Load in All Data
-arches_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/arches_vis_year.csv")
-badlands_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/badlands_vis_year.csv")
-channel_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/channel_vis_year.csv")
-glacier_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/glacier_vis_year.csv")
-gteton_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/gteton_vis_year.csv")
-redwood_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/redwood_vis_year.csv")
-shenandoah_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/shenandoah_vis_year.csv")
-yellowstone_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/yellowstone_vis_year.csv")
-yosemite_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/yosemite_vis_year.csv")
-zion_vis_year <- read_csv("~/github/BowenShinyApp/Visitation_data/zion_vis_year.csv")
+arches_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/arches_vis_year.csv")
+badlands_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/badlands_vis_year.csv")
+channel_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/channel_vis_year.csv")
+glacier_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/glacier_vis_year.csv")
+gteton_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/gteton_vis_year.csv")
+redwood_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/redwood_vis_year.csv")
+shenandoah_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/shenandoah_vis_year.csv")
+yellowstone_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/yellowstone_vis_year.csv")
+yosemite_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/yosemite_vis_year.csv")
+zion_vis_year <- read_csv("~/github/BowenShinyApp/Raw_Visitation_data/zion_vis_year.csv")
 ```
 
 ```{r more_wrangling}
@@ -111,39 +112,3 @@ ggplot(all_year_visitation)+
 
 ```
 
-
-## Part 2. Monthly Attendance
-
-```{r load_clean_monthly_data}
-
-# Need to clean like the HW/ARIMA data
-
-yellowstone_vis_month <- read_csv("~/github/BowenShinyApp/Visitation_Data/yellowstone_vis_month.csv") %>%
-  select(-Textbox5)
-yellowstone_vis_month$Year <- as.factor(yellowstone_vis_month$Year)
-
-gather_up <- gather(yellowstone_vis_month, key = "Month", value = "VisitorCount", JAN:DEC)
-
-gather_up$Month <- as.factor(gather_up$Month)
-gather_up$Month <- fct_relevel(gather_up$Month, "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
-
-gather_yellowstone <- gather_up[order(gather_up$Year),] %>% 
-  mutate(Visitors_Thou = VisitorCount/1000)
-
-# change to ts object
-yellowstone_monthly_ts <- ts(gather_yellowstone$Visitors_Thou, frequency = 12, start = c(1979,1))
-
-```
-
-```{r plot_monthly}
-
-ggplot2::autoplot(yellowstone_monthly_ts) +
-  labs(x= "Year",
-       y= "Number of Visitors \n (millions)",
-       title = "Monthly Visitors to Yellowstone",
-       subtitle = "(1979-2018)") +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
-
-```
