@@ -17,16 +17,16 @@ library(forecast)
 # Load Data
 
 ## Read in Yearly Visitation DF
-all_year_visitation <- read_csv("~/github/BowenShinyApp/all_year_visitation.csv")
+all_year_visitation <- read_csv("all_year_visitation.csv")
 all_year_visitation$ParkName <- as.factor(all_year_visitation$ParkName)
 
 ## Read in Monthly Visitation DF
-all_month_visitation <- read_csv("~/github/BowenShinyApp/all_month_visitation.csv")
+all_month_visitation <- read_csv("all_month_visitation.csv")
 all_month_visitation$ParkName <- as.factor(all_month_visitation$ParkName)
 all_month_visitation$Year <- as.factor(all_month_visitation$Year)
 
 ## Read in Travel Cost DF
-np_travel_costs <- read_csv("~/github/BowenShinyApp/np_travel_costs.csv")
+np_travel_costs <- read_csv("np_travel_costs.csv")
 np_travel_costs <- as.data.frame(np_travel_costs)
 
 
